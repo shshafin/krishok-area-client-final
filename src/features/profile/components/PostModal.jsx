@@ -9,6 +9,7 @@ import Modal from "./Modal";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useVideoVisibility, useModalVideoController } from "@/hooks/useVideoVisibility";
+import ExpandableText from "@/components/ui/ExpandableText";
 
 const LIKES_CHUNK = 12;
 
@@ -367,7 +368,7 @@ export default function PostModal({
               <div style={{ fontWeight: 600, marginBottom: "0.35rem" }}>
                 {post.author.name}
               </div>
-              <p style={{ margin: 0 }}>{post.content}</p>
+              <ExpandableText text={post.content} />
             </div>
           )}
 
@@ -434,7 +435,7 @@ export default function PostModal({
                         className="comment-item-body"
                         style={{ flex: 1 }}>
                         <h6>{comment.author.name || TEXT_UNKNOWN_USER}</h6>
-                        <p>{comment.text}</p>
+                        <ExpandableText text={comment.text} maxLines={3} />
                         <div className="comment-item-meta">
                           <span>{format(comment.createdAt)}</span>
                           {canDeleteComment?.(comment) && (

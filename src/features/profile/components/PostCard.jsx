@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ExpandableText from "@/components/ui/ExpandableText";
 import { useLocation } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import PropTypes from "prop-types";
@@ -121,7 +122,11 @@ export default function PostCard({
         )}
       </header>
 
-      {post.content && <p className="post-content">{post.content}</p>}
+      {post.content && (
+        <div className="post-content">
+          <ExpandableText text={post.content} />
+        </div>
+      )}
 
       {media?.type === "video" && media?.src && (
         <div
