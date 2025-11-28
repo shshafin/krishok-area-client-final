@@ -131,10 +131,12 @@
   .profile-quick-actions {
     width: 100%;
   }
+
   .profile-stat-buttons .button {
     width: 100% !important;
     min-width: 100% !important;
   }
+
   .profile-stat-buttons {
     width: 100%;
     flex-direction: column;
@@ -193,13 +195,13 @@
   width: 100%;
 }
 
-.profile-two-column > .profile-sidebar {
+.profile-two-column>.profile-sidebar {
   max-width: 320px;
   width: 100%;
   justify-self: start;
 }
 
-.profile-two-column > .post-feed {
+.profile-two-column>.post-feed {
   justify-self: center;
   width: 100%;
 }
@@ -211,8 +213,8 @@
     gap: 1.5rem;
   }
 
-  .profile-two-column > .profile-sidebar,
-  .profile-two-column > .post-feed {
+  .profile-two-column>.profile-sidebar,
+  .profile-two-column>.post-feed {
     width: 100%;
     min-width: 100%;
     justify-self: stretch;
@@ -227,17 +229,21 @@
     gap: 1.5rem;
     padding-top: 0;
   }
+
   .profile-sidebar-card {
     border-radius: 0 !important;
   }
+
   .seed-carousel-card__header {
     margin: auto .3rem;
   }
+
   .bizz-shorts {
     border-radius: 0 !important;
     border-left: none !important;
     border-right: none !important;
   }
+
   .profile-overview {
     border-left: none;
     border-right: none;
@@ -324,7 +330,8 @@
 
 /* Profile specific: make gallery cards compact, square and image-only */
 .profile-seed-carousel .bizz-shorts__slide {
-  flex: 0 0 180px; /* increased slide width for taller cards */
+  flex: 0 0 180px;
+  /* increased slide width for taller cards */
   padding: 0 0.35rem;
 }
 
@@ -337,7 +344,8 @@
 }
 
 .profile-seed-carousel .bizz-shorts__image {
-  height: 180px; /* taller square */
+  height: 180px;
+  /* taller square */
   object-fit: cover;
   display: block;
 }
@@ -448,7 +456,7 @@
   margin: .5rem 0 !important;
   padding: 0.8rem;
   background: rgba(11, 18, 31, 0.7);
-  border: 1px solid rgba(148,163,184,0.08);
+  border: 1px solid rgba(148, 163, 184, 0.08);
   border-radius: 12px;
   margin-bottom: 0.6rem;
 }
@@ -462,7 +470,7 @@
   height: 56px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid rgba(59,130,246,0.22);
+  border: 2px solid rgba(59, 130, 246, 0.22);
 }
 
 .status-dot {
@@ -517,7 +525,7 @@
 }
 
 .btn--follow.is-following {
-  background: rgba(148,163,184,0.08);
+  background: rgba(148, 163, 184, 0.08);
   color: #94a3b8;
 }
 
@@ -530,7 +538,7 @@
 
 .tab-btn {
   background: transparent;
-  border: 1px solid rgba(148,163,184,0.08);
+  border: 1px solid rgba(148, 163, 184, 0.08);
   color: #cbd5f5;
   padding: 0.45rem 0.8rem;
   border-radius: 999px;
@@ -538,9 +546,9 @@
 }
 
 .tab-btn.is-active {
-  background: rgba(37,99,235,0.12);
+  background: rgba(37, 99, 235, 0.12);
   color: #e6eef8;
-  border-color: rgba(59,130,246,0.28);
+  border-color: rgba(59, 130, 246, 0.28);
 }
 
 .seed-delete-btn {
@@ -681,7 +689,7 @@
   width: 100%;
   display: block;
   max-height: 520px;
-  object-fit: cover;
+  object-fit: contain !important;
 }
 
 .post-media--has-gallery {
@@ -1006,7 +1014,7 @@
 }
 
 /* Move only the last item to the right column */
-.post-modal-content > :last-child {
+.post-modal-content> :last-child {
   grid-column: 2;
 }
 
@@ -1015,12 +1023,15 @@
     display: flex;
     flex-direction: column;
   }
+
   .post-modal-media {
     max-height: 20vh;
   }
+
   .ka-modal-backdrop {
     padding: 0;
   }
+
   .ka-modal {
     padding: 0;
     border-radius: 0 !important;
@@ -1028,14 +1039,17 @@
     max-height: 100% !important;
     height: 87vh !important;
   }
+
   .ka-modal-body {
     height: 88%;
     overflow-x: auto;
   }
+
   .comment-list {
     margin-bottom: 5rem;
     min-height: 20vh;
   }
+
   .comment-input-area {
     width: 100%;
     left: 0;
@@ -1100,7 +1114,8 @@
 
 /* top-fixed variant for post modal (over header) */
 .post-modal--top.ka-modal {
-  margin-top: 0.5rem; /* small offset from top */
+  margin-top: 0.5rem;
+  /* small offset from top */
   border-radius: 12px;
 }
 
@@ -1144,17 +1159,21 @@
 
 
 .comment-list::-webkit-scrollbar {
-  width: 6px; /* thin scrollbar */
+  width: 6px;
+  /* thin scrollbar */
   margin-left: 2px;
 }
 
 .comment-list::-webkit-scrollbar-track {
-  background: none; /* remove full background */
+  background: none;
+  /* remove full background */
 }
 
 .comment-list::-webkit-scrollbar-thumb {
-  background-color: rgba(148, 163, 184, 0.25); /* visible draggable part */
-  border-radius: 4px;    /* smooth edges */
+  background-color: rgba(148, 163, 184, 0.25);
+  /* visible draggable part */
+  border-radius: 4px;
+  /* smooth edges */
 }
 
 
@@ -1197,10 +1216,12 @@
 /* Seed modal styles */
 .seed-modal .ka-modal {
   max-width: 720px;
-  background: #0b1321; /* match default modal background */
+  background: #0b1321;
+  /* match default modal background */
   border-radius: 12px;
   padding: 0;
-  height: 640px; /* fixed modal height for consistent layout */
+  height: 640px;
+  /* fixed modal height for consistent layout */
 }
 
 .seed-modal .seed-modal-inner {
@@ -1232,7 +1253,7 @@
   height: 56px;
   border-radius: 50%;
   object-fit: cover;
-  box-shadow: 0 6px 18px rgba(3,8,18,0.6);
+  box-shadow: 0 6px 18px rgba(3, 8, 18, 0.6);
 }
 
 .seed-author-name {
@@ -1263,12 +1284,13 @@
   border-radius: 10px;
   overflow: hidden;
   background: #071226;
-  border: 1px solid rgba(148,163,184,0.08);
+  border: 1px solid rgba(148, 163, 184, 0.08);
 }
 
 .seed-media {
   width: 100%;
-  height: 360px; /* fixed image area height */
+  height: 360px;
+  /* fixed image area height */
   display: block;
   object-fit: cover;
 }
@@ -1295,7 +1317,8 @@
 }
 
 .seed-modal .ka-modal-close {
-  display: block; /* make sure close button is visible */
+  display: block;
+  /* make sure close button is visible */
   color: #94a3b8;
 }
 
@@ -1308,7 +1331,7 @@
 .seed-modal .ka-modal-footer {
   padding: 0.6rem 1rem;
   background: transparent;
-  border-top: 1px solid rgba(148,163,184,0.06);
+  border-top: 1px solid rgba(148, 163, 184, 0.06);
 }
 
 .comment-delete-btn {

@@ -39,8 +39,8 @@ export default function PostCard({
   const [commentText, setCommentText] = useState("");
   const location = useLocation();
 
-  // Video visibility hook for viewport-based play/pause
-  const videoRef = useVideoVisibility({ threshold: 0.3 });
+  // Video visibility hook for viewport-based play/pause with global coordination
+  const videoRef = useVideoVisibility({ threshold: 0.3, priority: 'normal' });
 
   // Show delete button only when on the user's profile page (/me)
   const showDeleteButton = Boolean(
@@ -57,16 +57,16 @@ export default function PostCard({
   const media = post.media;
   const mediaGallery = Array.isArray(post.mediaGallery)
     ? post.mediaGallery.filter(
-        (item) => item && item.type === "image" && item.src
-      )
+      (item) => item && item.type === "image" && item.src
+    )
     : [];
   const canShowGallery = media?.type !== "video";
   const galleryImages = canShowGallery
     ? mediaGallery.length
       ? mediaGallery
       : media?.type === "image"
-      ? [media]
-      : []
+        ? [media]
+        : []
     : [];
   const totalGalleryImages = galleryImages.length;
   const extraImageCount = totalGalleryImages > 4 ? totalGalleryImages - 4 : 0;
@@ -84,11 +84,11 @@ export default function PostCard({
   };
   const mediaInteractableProps = onOpenPost
     ? {
-        role: "button",
-        tabIndex: 0,
-        onClick: handleOpenPost,
-        onKeyDown: handleMediaKeyDown,
-      }
+      role: "button",
+      tabIndex: 0,
+      onClick: handleOpenPost,
+      onKeyDown: handleMediaKeyDown,
+    }
     : {};
 
   return (
@@ -131,6 +131,7 @@ export default function PostCard({
             ref={videoRef}
             src={media.src}
             controls
+            muted
             loop
             style={mediaStyles}
           />
@@ -154,9 +155,8 @@ export default function PostCard({
               return (
                 <div
                   key={key}
-                  className={`post-media-grid-item${
-                    isOverflowItem ? " post-media-grid-item--more" : ""
-                  }`}>
+                  className={`post-media-grid-item${isOverflowItem ? " post-media-grid-item--more" : ""
+                    }`}>
                   <img
                     src={item.src}
                     alt={post.content || TEXT_MEDIA_ALT}

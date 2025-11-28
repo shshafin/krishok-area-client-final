@@ -8,7 +8,7 @@ import { LiquedLoader } from "@/components/loaders";
 import Modal from "./Modal";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import { useVideoVisibility } from "@/hooks/useVideoVisibility";
+import { useVideoVisibility, useModalVideoController } from "@/hooks/useVideoVisibility";
 
 const LIKES_CHUNK = 12;
 
@@ -69,8 +69,11 @@ export default function PostModal({
   const [likesLoading, setLikesLoading] = useState(false);
   const [activeMode, setActiveMode] = useState(mode ?? "comments");
 
-  // Video visibility hook for viewport-based play/pause
-  const videoRef = useVideoVisibility({ threshold: 0.5 });
+  // Notify global controller about modal state
+  useModalVideoController(open);
+
+  // Video visibility hook for viewport-based play/pause with modal priority
+  const videoRef = useVideoVisibility({ threshold: 0.5, priority: 'modal' });
 
   const likesScrollRef = useRef(null);
   const likesThrottleRef = useRef(false);
@@ -99,8 +102,8 @@ export default function PostModal({
     }
     const rawGallery = Array.isArray(post.mediaGallery)
       ? post.mediaGallery.filter(
-          (item) => item && item.type === "image" && item.src
-        )
+        (item) => item && item.type === "image" && item.src
+      )
       : [];
     if (rawGallery.length > 0) {
       return rawGallery;
@@ -312,9 +315,8 @@ export default function PostModal({
       backdropStyle={{ padding: 0, alignItems: "flex-start" }}>
       <div className="post-modal-content">
         <div
-          className={`post-modal-media${
-            useCarousel ? " post-modal-media--carousel" : ""
-          }`}>
+          className={`post-modal-media${useCarousel ? " post-modal-media--carousel" : ""
+            }`}>
           {hasVideo ? (
             <video
               ref={videoRef}

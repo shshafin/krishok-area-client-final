@@ -19,9 +19,9 @@ import { useVideoVisibility } from "../../hooks/useVideoVisibility";
 export default function Post({
   post,
   currentUserId = null,
-  onLikeClick = () => {},
-  onLikesView = () => {},
-  onCommentsView = () => {},
+  onLikeClick = () => { },
+  onLikesView = () => { },
+  onCommentsView = () => { },
 }) {
   const {
     _id,
@@ -53,8 +53,8 @@ export default function Post({
   const [comments, setComments] = useState(initialComments);
   const [openIndex, setOpenIndex] = useState(-1);
 
-  // Video visibility hook for viewport-based play/pause
-  const videoRef = useVideoVisibility({ threshold: 0.3 });
+  // Video visibility hook for viewport-based play/pause with global coordination
+  const videoRef = useVideoVisibility({ threshold: 0.3, priority: 'normal' });
 
   useEffect(() => {
     setComments(initialComments);
@@ -172,31 +172,32 @@ export default function Post({
 
 
         <div className="media-content flex FY-center">
-        {/* Media */}
-        {media.map((url, index) => {
-          const isVideo = /\.(mp4|webm|ogg)$/i.test(url);
-          return (
-            <div
-              key={`${_id}-${index}`}
-              className="media-item cursor-pointer"
-              onClick={() => setOpenIndex(index)}>
-              {isVideo ? (
-                <video
-                  ref={videoRef}
-                  src={url.startsWith("http") ? url : `${baseApi}${url}`}
-                  controls
-                  preload="metadata"
-                  className="media-video"
-                />
-              ) : (
-                <img
-                  src={url.startsWith("http") ? url : `${baseApi}${url}`}
-                  alt={`media-${index}`}
-                />
-              )}
-            </div>
-          );
-        })}
+          {/* Media */}
+          {media.map((url, index) => {
+            const isVideo = /\.(mp4|webm|ogg)$/i.test(url);
+            return (
+              <div
+                key={`${_id}-${index}`}
+                className="media-item cursor-pointer"
+                onClick={() => setOpenIndex(index)}>
+                {isVideo ? (
+                  <video
+                    ref={videoRef}
+                    src={url.startsWith("http") ? url : `${baseApi}${url}`}
+                    controls
+                    muted
+                    preload="metadata"
+                    className="media-video"
+                  />
+                ) : (
+                  <img
+                    src={url.startsWith("http") ? url : `${baseApi}${url}`}
+                    alt={`media-${index}`}
+                  />
+                )}
+              </div>
+            );
+          })}
         </div>
 
         {/* Interactions */}
