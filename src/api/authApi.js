@@ -308,6 +308,24 @@ export const fetchGalleryById = (galleryId) => {
   return request(`/galleries/${galleryId}`, { method: "GET" });
 };
 
+// edit gallery
+export const editGallery = (galleryId, data) => {
+  const isFormData = data instanceof FormData;
+  return request(`/galleries/${galleryId}`, {
+    method: "PUT",
+    body: isFormData ? data : JSON.stringify(data),
+    credentials: "include",
+  });
+};
+
+// delete gallery
+export const deleteGallery = (galleryId) => {
+  return request(`/galleries/${galleryId}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+};
+
 // create market price
 export const createMarketPrice = (data) => {
   console.log(data);

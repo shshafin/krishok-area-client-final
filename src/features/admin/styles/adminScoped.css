@@ -546,9 +546,64 @@
 }
 
 ._scoped_admin .manage-gallery-actions {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
   display: flex;
   align-items: center;
   gap: 0.45rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+._scoped_admin .manage-gallery-card:hover .manage-gallery-actions {
+  opacity: 1;
+}
+
+._scoped_admin .btn-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+._scoped_admin .btn-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+._scoped_admin .btn-action.edit {
+  color: #2563eb;
+}
+
+._scoped_admin .btn-action.edit svg {
+  fill: none;
+}
+
+._scoped_admin .btn-action.edit:hover {
+  background: #2563eb;
+  color: white;
+}
+
+._scoped_admin .btn-action.delete {
+  color: #dc2626;
+}
+
+._scoped_admin .btn-action.delete:hover {
+  background: #dc2626;
+  color: white;
+}
+
+._scoped_admin .btn-action svg {
+  width: 18px;
+  height: 18px;
 }
 
 ._scoped_admin .manage-gallery-delete {
