@@ -4,6 +4,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { addVideo } from "@/api/authApi";
 
 export default function AddVideosPage() {
+  const [title, setTitle] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
   const [description, setDescription] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -22,6 +23,7 @@ export default function AddVideosPage() {
 
     try {
       const payload = {
+        title: title.trim() || "",
         videoUrl: videoUrl.trim(),
         description: description.trim() || "",
       };
@@ -75,6 +77,25 @@ export default function AddVideosPage() {
           <form onSubmit={handleSubmit}>
             <div className="row">
               <div className="col-12">
+                <div className="card card-outline card-primary mb-3">
+                  <div className="card-header">
+                    <h3 className="card-title mb-0">Video Title</h3>
+                  </div>
+                  <div className="card-body">
+                    <div className="form-group">
+                      <label htmlFor="videoTitle">Title</label>
+                      <input
+                        id="videoTitle"
+                        type="text"
+                        className="form-control"
+                        placeholder="Enter video title"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 <div className="card card-outline card-primary mb-3">
                   <div className="card-header">
                     <h3 className="card-title mb-0">Video Source</h3>

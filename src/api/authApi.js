@@ -370,6 +370,15 @@ export const fetchAllVideos = () => {
   return request("/videos/all", { method: "GET" });
 };
 
+// edit video
+export const editVideo = (videoId, data) => {
+  return request(`/videos/${videoId}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+    credentials: "include",
+  });
+};
+
 // delete video
 export const deleteVideo = (videoId) => {
   return request(`/videos/${videoId}`, {

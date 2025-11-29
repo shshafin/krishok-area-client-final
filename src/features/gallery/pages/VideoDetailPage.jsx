@@ -111,7 +111,7 @@ const VideoDetailPage = () => {
                         </span>
                     </div>
 
-                    {video.description && video.title !== video.description && (
+                    {video.description && (
                         <div className="video-description">
                             <h3 className="description-heading">বিস্তারিত</h3>
                             <p className="description-text">{video.description}</p>
