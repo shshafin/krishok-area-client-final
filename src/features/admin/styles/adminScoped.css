@@ -115,7 +115,7 @@
   gap: 0.75rem;
 }
 
-._scoped_admin .manage-post-footer > div:first-child {
+._scoped_admin .manage-post-footer>div:first-child {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -359,6 +359,7 @@
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   }
 }
+
 ._scoped_admin .manage-post-card.is-removing {
   opacity: 0;
   transform: translateY(-8px);
@@ -425,7 +426,7 @@
   outline-offset: 2px;
 }
 
-._scoped_admin .admin-icon-btn + .admin-icon-btn {
+._scoped_admin .admin-icon-btn+.admin-icon-btn {
   margin-left: 0.5rem;
 }
 
@@ -729,6 +730,7 @@
 }
 
 @media screen and (max-width: 1115px) {
+
   ._scoped_admin .card-header,
   ._scoped_admin .gallery-status {
     display: flex;
@@ -789,7 +791,7 @@
   color: #94a3b8;
 }
 
-.add-photo-page .add-photo-breadcrumbs .breadcrumb-item + .breadcrumb-item::before {
+.add-photo-page .add-photo-breadcrumbs .breadcrumb-item+.breadcrumb-item::before {
   color: #cbd5f5;
 }
 
@@ -1421,8 +1423,9 @@
 }
 
 ._scoped_admin .crop-detail-media img {
-  width: 100%;
+  width: auto;
   height: 100%;
+  margin: 0 auto;
   object-fit: cover;
   object-position: center;
   transition: transform 0.3s ease;
@@ -1701,4 +1704,3 @@
   }
 
 }
-
