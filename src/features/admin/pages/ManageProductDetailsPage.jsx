@@ -1,5 +1,5 @@
 ﻿import { useEffect, useMemo, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import "../styles/adminScoped.css";
 import TrashIcon from "@/assets/IconComponents/Trash";
@@ -7,7 +7,6 @@ import EditBadgeIcon from "@/assets/IconComponents/EditBadgeIcon";
 import {
   fetchAllProducts,
   deleteProduct as deleteProductApi,
-  editProduct as editProductApi,
 } from "@/api/authApi";
 
 export default function ManageProductDetailsPage() {
@@ -17,17 +16,7 @@ export default function ManageProductDetailsPage() {
   const [expandedIds, setExpandedIds] = useState(() => new Set());
   const [confirmProduct, setConfirmProduct] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [editProduct, setEditProduct] = useState(null);
-  const [editForm, setEditForm] = useState({
-    productName: "",
-    materialName: "",
-    category: "",
-    beboharerShubidha: "",
-    foshol: "",
-    balai: "",
-    matra: "",
-    beboharBidhi: "",
-  });
+  const navigate = useNavigate();
 
   // ✅ Fetch products from API
   useEffect(() => {
@@ -96,50 +85,6 @@ export default function ManageProductDetailsPage() {
   };
 
   const handleCancelDelete = () => setConfirmProduct(null);
-
-  // ✅ Edit product
-  const handleEdit = (product) => {
-    setEditProduct(product);
-    setEditForm({
-      productName: product.productName || "",
-      materialName: product.materialName || "",
-      category: product.category || "",
-      beboharerShubidha: Array.isArray(product.beboharerShubidha)
-        ? product.beboharerShubidha.join(", ")
-        : product.beboharerShubidha || "",
-      foshol: Array.isArray(product.foshol)
-        ? product.foshol.join(", ")
-        : product.foshol || "",
-      balai: Array.isArray(product.balai)
-        ? product.balai.join(", ")
-        : product.balai || "",
-      matra: product.matra || "",
-      beboharBidhi: product.beboharBidhi || "",
-    });
-  };
-
-  const handleCancelEdit = () => setEditProduct(null);
-
-  const handleSubmitEdit = async () => {
-    if (!editProduct) return;
-    try {
-      const res = await editProductApi(editProduct._id, editForm);
-      if (res?.success) {
-        setProducts((prev) =>
-          prev.map((item) =>
-            item._id === editProduct._id ? { ...item, ...editForm } : item
-          )
-        );
-        toast.success("পণ্যের তথ্য আপডেট হয়েছে");
-        setEditProduct(null);
-      } else {
-        toast.error("আপডেট ব্যর্থ হয়েছে");
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error("সার্ভার ত্রুটি ঘটেছে");
-    }
-  };
 
   // ✅ Expand/collapse summary
   const toggleExpanded = (id) => {
@@ -269,7 +214,7 @@ export default function ManageProductDetailsPage() {
                       <button
                         type="button"
                         className="crop-detail-edit-icon"
-                        onClick={() => handleEdit(product)}
+                        onClick={() => navigate(`/admin/products/edit/${product._id}`)}
                         title="Edit">
                         <EditBadgeIcon
                           width={20}
@@ -404,142 +349,7 @@ export default function ManageProductDetailsPage() {
         </div>
       )}
 
-      {/* Edit Modal */}
-      {editProduct && (
-        <div className="admin-modal-backdrop">
-          <div className="admin-modal">
-            <div className="admin-modal-header">
-              <h5>Edit Product Detail</h5>
-            </div>
-            <div className="admin-modal-body">
-              <div className="form-group">
-                <label>পণ্যের নাম (Product Name)</label>
-                <input
-                  type="text"
-                  value={editForm.productName}
-                  onChange={(e) =>
-                    setEditForm((prev) => ({
-                      ...prev,
-                      productName: e.target.value,
-                    }))
-                  }
-                  className="form-control"
-                />
-              </div>
-              <div className="form-group">
-                <label>উপাদান নাম (Material Name)</label>
-                <input
-                  type="text"
-                  value={editForm.materialName}
-                  onChange={(e) =>
-                    setEditForm((prev) => ({
-                      ...prev,
-                      materialName: e.target.value,
-                    }))
-                  }
-                  className="form-control"
-                />
-              </div>
-              <div className="form-group">
-                <label>ক্যাটাগরি (Category)</label>
-                <input
-                  type="text"
-                  value={editForm.category}
-                  onChange={(e) =>
-                    setEditForm((prev) => ({
-                      ...prev,
-                      category: e.target.value,
-                    }))
-                  }
-                  className="form-control"
-                />
-              </div>
-              <div className="form-group">
-                <label>উপকারিতা ও ব্যবহার সংক্ষেপ</label>
-                <textarea
-                  value={editForm.beboharerShubidha}
-                  onChange={(e) =>
-                    setEditForm((prev) => ({
-                      ...prev,
-                      beboharerShubidha: e.target.value,
-                    }))
-                  }
-                  className="form-control"
-                  rows="3"
-                />
-              </div>
-              <div className="form-group">
-                <label>ফসল</label>
-                <textarea
-                  value={editForm.foshol}
-                  onChange={(e) =>
-                    setEditForm((prev) => ({
-                      ...prev,
-                      foshol: e.target.value,
-                    }))
-                  }
-                  className="form-control"
-                  rows="2"
-                />
-              </div>
-              <div className="form-group">
-                <label>বালাই</label>
-                <textarea
-                  value={editForm.balai}
-                  onChange={(e) =>
-                    setEditForm((prev) => ({
-                      ...prev,
-                      balai: e.target.value,
-                    }))
-                  }
-                  className="form-control"
-                  rows="2"
-                />
-              </div>
-              <div className="form-group">
-                <label>মাত্রা</label>
-                <textarea
-                  value={editForm.matra}
-                  onChange={(e) =>
-                    setEditForm((prev) => ({
-                      ...prev,
-                      matra: e.target.value,
-                    }))
-                  }
-                  className="form-control"
-                  rows="2"
-                />
-              </div>
-              <div className="form-group">
-                <label>ব্যবহারবিধি</label>
-                <textarea
-                  value={editForm.beboharBidhi}
-                  onChange={(e) =>
-                    setEditForm((prev) => ({
-                      ...prev,
-                      beboharBidhi: e.target.value,
-                    }))
-                  }
-                  className="form-control"
-                  rows="3"
-                />
-              </div>
-            </div>
-            <div className="admin-modal-footer">
-              <button
-                className="btn btn-outline-secondary btn-sm"
-                onClick={handleCancelEdit}>
-                Cancel
-              </button>
-              <button
-                className="btn btn-success btn-sm"
-                onClick={handleSubmitEdit}>
-                Save Changes
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Edit Modal Removed */}
     </div>
   );
 }

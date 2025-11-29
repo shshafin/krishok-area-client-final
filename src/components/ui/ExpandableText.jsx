@@ -34,7 +34,6 @@ export default function ExpandableText({ text, maxLines = 3, className = '', sty
                     WebkitBoxOrient: 'vertical',
                     overflow: 'hidden',
                     // Ensure it takes up space
-                    width: '100%',
                 }}
             >
                 {text}

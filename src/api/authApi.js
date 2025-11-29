@@ -278,9 +278,10 @@ export const fetchAllProducts = () => {
 
 // edit product
 export const editProduct = (productId, data) => {
+  const isFormData = data instanceof FormData;
   return request(`/products/${productId}`, {
     method: "PUT",
-    body: JSON.stringify(data),
+    body: isFormData ? data : JSON.stringify(data),
     credentials: "include",
   });
 };

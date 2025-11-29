@@ -55,6 +55,9 @@ const AddCompanyCategoryPage = lazy(() =>
 const AddProductPage = lazy(() =>
   import("./features/admin/pages/AddProductPage")
 );
+const EditProductPage = lazy(() =>
+  import("./features/admin/pages/EditProductPage")
+);
 const ManagePostsPage = lazy(() =>
   import("./features/admin/pages/ManagePostsPage")
 );
@@ -360,6 +363,10 @@ function App() {
           <Route
             path="products/add"
             element={<AddProductPage />}
+          />
+          <Route
+            path="products/edit/:id"
+            element={<EditProductPage />}
           />
           <Route
             path="products/manage-details"
