@@ -5312,7 +5312,7 @@ h4 {
 
 .crop-detail-edit-icon {
   position: relative !important;
-  z-index: 11111111;
+  z-index: 111;
 }
 
 .crop-detail-actions button {
