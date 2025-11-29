@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { fetchAllVideos } from "@/api/authApi";
@@ -14,11 +14,11 @@ const getYoutubeThumbnail = (url) => {
 };
 
 const VideoGallerySlider = () => {
-  const [emblaRef] = useEmblaCarousel(
+  const [emblaRef, emblaApi] = useEmblaCarousel(
     {
       loop: false,
-      align: "start",
-      dragFree: true,
+      align: "center",
+      dragFree: false,
       containScroll: "trimSnaps",
     },
     [
@@ -31,6 +31,7 @@ const VideoGallerySlider = () => {
   );
 
   const [videos, setVideos] = useState([]);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
   useEffect(() => {
     const loadVideos = async () => {
@@ -52,6 +53,25 @@ const VideoGallerySlider = () => {
     };
     loadVideos();
   }, []);
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    onSelect();
+    emblaApi.on("select", onSelect);
+    emblaApi.on("reInit", onSelect);
+  }, [emblaApi, onSelect]);
+
+  const scrollTo = useCallback(
+    (index) => {
+      if (emblaApi) emblaApi.scrollTo(index);
+    },
+    [emblaApi]
+  );
 
   const handleVideoClick = (video) => {
     if (video.videoUrl) {
@@ -93,6 +113,22 @@ const VideoGallerySlider = () => {
           ))}
         </div>
       </div>
+
+      {/* Dot Pagination */}
+      {videos.length > 0 && (
+        <div className="embla__dots">
+          {videos.map((_, index) => (
+            <button
+              key={index}
+              type="button"
+              className={`embla__dot ${index === selectedIndex ? "embla__dot--active" : ""
+                }`}
+              onClick={() => scrollTo(index)}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
