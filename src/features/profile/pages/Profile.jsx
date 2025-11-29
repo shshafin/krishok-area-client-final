@@ -98,6 +98,7 @@ export default function ProfilePage() {
               ? `${baseApi}${post.user.profileImage}`
               : avatarFromSeed(post.user?.username || "user"),
           },
+          content: post.text || post.content || post.caption || post.description || "",
           likes: Array.isArray(post.likes) ? post.likes.length : 0,
           liked:
             Array.isArray(post.likes) &&
@@ -118,8 +119,8 @@ export default function ProfilePage() {
             post.images?.length > 0
               ? { type: "image", src: `${baseApi}${post.images[0]}` }
               : post.videos?.length > 0
-              ? { type: "video", src: `${baseApi}${post.videos[0]}` }
-              : null,
+                ? { type: "video", src: `${baseApi}${post.videos[0]}` }
+                : null,
           mediaGallery: (post.images || []).map((img) => ({
             type: "image",
             src: `${baseApi}${img}`,
@@ -172,8 +173,8 @@ export default function ProfilePage() {
         avatar: currentUser.profileImage
           ? `${baseApi}${currentUser.profileImage}`
           : currentUser.avatar
-          ? `${baseApi}${currentUser.avatar}`
-          : avatarFromSeed(fallbackSeed),
+            ? `${baseApi}${currentUser.avatar}`
+            : avatarFromSeed(fallbackSeed),
       };
     }
     return {
@@ -190,8 +191,8 @@ export default function ProfilePage() {
     (currentUserId &&
       profileOwnerId &&
       String(currentUserId).toLowerCase() ===
-        String(profileOwnerId).toLowerCase()) ||
-      (!username && currentUserId)
+      String(profileOwnerId).toLowerCase()) ||
+    (!username && currentUserId)
   );
 
   const stats = useMemo(
@@ -214,10 +215,10 @@ export default function ProfilePage() {
         prev.map((p) =>
           p.id === postId
             ? {
-                ...p,
-                liked: willLike,
-                likes: willLike ? p.likes + 1 : p.likes - 1,
-              }
+              ...p,
+              liked: willLike,
+              likes: willLike ? p.likes + 1 : p.likes - 1,
+            }
             : p
         )
       );
@@ -242,8 +243,8 @@ export default function ProfilePage() {
           avatar: commentData.user?.profileImage
             ? `${baseApi}${commentData.user.profileImage}`
             : currentUser?.profileImage ||
-              currentUser?.avatar ||
-              avatarFromSeed(currentUser?.username || "current"),
+            currentUser?.avatar ||
+            avatarFromSeed(currentUser?.username || "current"),
         },
       };
       setPosts((prev) =>
@@ -267,9 +268,9 @@ export default function ProfilePage() {
         prev.map((p) =>
           p.id === postId
             ? {
-                ...p,
-                comments: (p.comments || []).filter((c) => c.id !== commentId),
-              }
+              ...p,
+              comments: (p.comments || []).filter((c) => c.id !== commentId),
+            }
             : p
         )
       );
@@ -337,6 +338,7 @@ export default function ProfilePage() {
               ? `${baseApi}${currentUser.profileImage}`
               : avatarFromSeed(currentUser.username || "current"),
           },
+          content: postData.text || postData.content || postData.caption || postData.description || "",
           likes: 0,
           liked: false,
           comments: [],
@@ -344,8 +346,8 @@ export default function ProfilePage() {
             postData.images?.length > 0
               ? { type: "image", src: `${baseApi}${postData.images[0]}` }
               : postData.videos?.length > 0
-              ? { type: "video", src: `${baseApi}${postData.videos[0]}` }
-              : null,
+                ? { type: "video", src: `${baseApi}${postData.videos[0]}` }
+                : null,
           mediaGallery: (postData.images || []).map((img) => ({
             type: "image",
             src: `${baseApi}${img}`,
@@ -402,7 +404,7 @@ export default function ProfilePage() {
             setComposerMode(mode);
             setComposerOpen(true);
           }}
-          onLoadMoreSeeds={() => {}}
+          onLoadMoreSeeds={() => { }}
         />
 
         <section className="post-feed">

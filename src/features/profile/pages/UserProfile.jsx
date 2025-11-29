@@ -52,6 +52,7 @@ export default function UserProfilePage() {
               ? `${baseApi}${post.user.profileImage}`
               : avatarFromSeed(post.user?.username || "user"),
           },
+          content: post.text || post.content || post.caption || post.description || "",
           likes: Array.isArray(post.likes) ? post.likes.length : 0,
           liked: false, // readonly
           comments: (post.comments || []).map((c) => ({
@@ -70,8 +71,8 @@ export default function UserProfilePage() {
             post.images?.length > 0
               ? { type: "image", src: `${baseApi}${post.images[0]}` }
               : post.videos?.length > 0
-              ? { type: "video", src: `${baseApi}${post.videos[0]}` }
-              : null,
+                ? { type: "video", src: `${baseApi}${post.videos[0]}` }
+                : null,
         }));
         setPosts(normalizedPosts);
 
