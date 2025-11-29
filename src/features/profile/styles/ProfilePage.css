@@ -1143,18 +1143,17 @@
   display: flex;
   height: 100%;
   overflow: hidden;
-  overflow-x: auto;
+  overflow-y: auto;
   flex-direction: column;
   gap: 1rem;
 }
 
 .comment-list {
   display: flex;
-  overflow-x: auto;
   flex-direction: column;
   gap: 1rem;
   padding-right: 4px;
-  padding: 2rem auto;
+  padding-bottom: 4rem;
 }
 
 

@@ -417,15 +417,11 @@ export default function PostModal({
                 )}
                 {post.comments.map((comment) => {
                   const profilePath = buildProfilePath(comment.author);
-                  const Wrapper = profilePath ? NavLink : "div";
-                  const wrapperProps = profilePath
-                    ? { to: profilePath, className: "comment-item" }
-                    : { className: "comment-item" };
 
                   return (
-                    <Wrapper
+                    <div
                       key={comment.id}
-                      {...wrapperProps}>
+                      className="comment-item">
                       <img
                         src={comment.author.avatar}
                         alt={comment.author.name}
@@ -434,7 +430,18 @@ export default function PostModal({
                       <div
                         className="comment-item-body"
                         style={{ flex: 1 }}>
-                        <h6>{comment.author.name || TEXT_UNKNOWN_USER}</h6>
+                        <h6>
+                          {profilePath ? (
+                            <NavLink
+                              to={profilePath}
+                              style={{ color: "inherit", textDecoration: "none" }}
+                            >
+                              {comment.author.name || TEXT_UNKNOWN_USER}
+                            </NavLink>
+                          ) : (
+                            comment.author.name || TEXT_UNKNOWN_USER
+                          )}
+                        </h6>
                         <ExpandableText text={comment.text} maxLines={3} />
                         <div className="comment-item-meta">
                           <span>{format(comment.createdAt)}</span>
@@ -453,7 +460,7 @@ export default function PostModal({
                           )}
                         </div>
                       </div>
-                    </Wrapper>
+                    </div>
                   );
                 })}
               </div>
