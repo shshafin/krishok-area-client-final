@@ -132,7 +132,6 @@ export default function ProductDetails() {
                 key={i}
                 className="product-details-container">
                 <div className="product-details-infocard">
-                  <div className="product-details-cardlabel">ফসল</div>
                   <div className="product-details-crops">
                     {item.crop.split(",").map((crop, index) => (
                       <div
@@ -145,7 +144,6 @@ export default function ProductDetails() {
                 </div>
 
                 <div className="product-details-infocard">
-                  <div className="product-details-cardlabel">বালাই</div>
                   <div className="product-details-crops">
                     {item.pest.split(",").map((pest, index) => (
                       <div
@@ -158,7 +156,6 @@ export default function ProductDetails() {
                 </div>
 
                 <div className="product-details-infocard">
-                  <div className="product-details-cardlabel">মাত্রা</div>
                   <div className="product-details-crops">
                     {item.dose.split(",").map((dose, index) => (
                       <div
@@ -171,7 +168,6 @@ export default function ProductDetails() {
                 </div>
 
                 <div className="product-details-infocard">
-                  <div className="product-details-cardlabel">ব্যবহারবিধি</div>
                   <div className="product-details-crops">
                     {item.method.split(",").map((method, index) => (
                       <div
