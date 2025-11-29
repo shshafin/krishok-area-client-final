@@ -74,8 +74,8 @@ export default function SlideGallery({ items = [] }) {
                   src={`${baseApi}${p.img}`}
                   alt={p.name}
                   style={{
-                    width: 300,
-                    height: 400,
+                    width: "auto",
+                    height: "100%",
                     objectFit: "cover",
                     borderRadius: 8,
                   }}

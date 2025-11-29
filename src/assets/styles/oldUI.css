@@ -3072,7 +3072,6 @@
 
 
 .colorboxc {
-  color: rgb(194, 28, 28);
   user-select: none;
 }
 
@@ -3346,6 +3345,12 @@
   object-fit: cover;
 }
 
+.product-card__media img {
+  display: block;
+  height: 90%;
+  max-width: 100%;
+  margin: 1rem auto;
+}
 
 
 .co {
