@@ -4888,8 +4888,22 @@ h4 {
 
 .guidelines-sections {
   display: flex;
-  flex-direction: column;
   gap: 1.75rem;
+  align-items: flex-start;
+}
+
+.guidelines-sections section {
+  width: 50%;
+}
+
+@media screen and (max-width: 980px) {
+  .guidelines-sections {
+    flex-direction: column;
+  }
+
+  .guidelines-sections section {
+    width: 100%;
+  }
 }
 
 .guidelines-section {
@@ -5026,8 +5040,12 @@ h4 {
 
 .guidelines-card__preview {
   position: relative;
+  height: 100%;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
   overflow: hidden;
-  max-width: 200px;
+  padding: 0;
+  margin: 0;
   background: rgba(30, 41, 59, 0.85);
 }
 
