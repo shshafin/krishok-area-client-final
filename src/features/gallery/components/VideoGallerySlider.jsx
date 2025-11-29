@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
+import { NavLink } from "react-router-dom";
 import { fetchAllVideos } from "@/api/authApi";
 
 // Generate YouTube Thumbnail
@@ -73,12 +74,6 @@ const VideoGallerySlider = () => {
     [emblaApi]
   );
 
-  const handleVideoClick = (video) => {
-    if (video.videoUrl) {
-      window.open(video.videoUrl, "_blank", "noopener,noreferrer");
-    }
-  };
-
   return (
     <div className="video-gallery-container">
       <h2 className="gallery-title">বৈশিষ্ট্যযুক্ত ভিডিও</h2>
@@ -90,25 +85,25 @@ const VideoGallerySlider = () => {
           {videos.map((video) => (
             <div
               key={video.id}
-              className="embla__slide"
-              onClick={() => handleVideoClick(video)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => e.key === "Enter" && handleVideoClick(video)}>
-              <div className="video-card">
-                <div className="thumbnail-container cursor-pointer">
-                  <img
-                    src={video.thumbnail}
-                    alt={video.title}
-                    className="video-thumbnail w-full h-48 object-cover"
-                  />
+              className="embla__slide">
+              <NavLink
+                to={`/video/${video.id}`}
+                className="video-card-link">
+                <div className="video-card">
+                  <div className="thumbnail-container cursor-pointer">
+                    <img
+                      src={video.thumbnail}
+                      alt={video.title}
+                      className="video-thumbnail w-full h-48 object-cover"
+                    />
+                  </div>
+                  <div className="video-info mt-2">
+                    <h3 className="video-title text-sm font-medium">
+                      {video.title}
+                    </h3>
+                  </div>
                 </div>
-                <div className="video-info mt-2">
-                  <h3 className="video-title text-sm font-medium">
-                    {video.title}
-                  </h3>
-                </div>
-              </div>
+              </NavLink>
             </div>
           ))}
         </div>

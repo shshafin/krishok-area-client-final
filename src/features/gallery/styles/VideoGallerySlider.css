@@ -48,6 +48,14 @@
   }
 }
 
+.video-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 @media (max-width: 890px) {
   .embla {
     padding: 0 !important;
