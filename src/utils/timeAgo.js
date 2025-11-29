@@ -1,44 +1,32 @@
-export function timeAgo(dateString) {
-  if (!dateString) return "";
+import { format, register } from 'timeago.js';
 
-  // 🔹 বাংলা সংখ্যা থেকে ইংরেজিতে রূপান্তর
-  const banglaToEnglish = (str) => {
-    return str
-      .replace(/০/g, "0")
-      .replace(/১/g, "1")
-      .replace(/২/g, "2")
-      .replace(/৩/g, "3")
-      .replace(/৪/g, "4")
-      .replace(/৫/g, "5")
-      .replace(/৬/g, "6")
-      .replace(/৭/g, "7")
-      .replace(/৮/g, "8")
-      .replace(/৯/g, "9");
-  };
+const toBanglaDigit = (number) => {
+  return number.toString().replace(/\d/g, (d) => '০১২৩৪৫৬৭৮৯'[d]);
+};
 
-  try {
-    const englishDateStr = banglaToEnglish(dateString);
-    // format: 26/10/2025, 10:08:20 AM → convert for Date()
-    const [datePart, timePart] = englishDateStr.split(", ");
-    const [day, month, year] = datePart.split("/");
-    const formatted = `${year}-${month}-${day} ${timePart}`;
-    const past = new Date(formatted);
-    const now = new Date();
-
-    if (isNaN(past.getTime())) return dateString; // fallback if invalid
-
-    const diffMs = now - past;
-    const diffSec = Math.floor(diffMs / 1000);
-    const diffMin = Math.floor(diffSec / 60);
-    const diffHr = Math.floor(diffMin / 60);
-    const diffDay = Math.floor(diffHr / 24);
-
-    if (diffSec < 60) return "just now";
-    if (diffMin < 60) return `${diffMin} min${diffMin > 1 ? "s" : ""} ago`;
-    if (diffHr < 24) return `${diffHr} hour${diffHr > 1 ? "s" : ""} ago`;
-    if (diffDay < 7) return `${diffDay} day${diffDay > 1 ? "s" : ""} ago`;
-    return past.toLocaleDateString("en-GB");
-  } catch {
-    return dateString;
+const localeFunc = (number, index, total_sec) => {
+  const bnNumber = toBanglaDigit(number);
+  switch (index) {
+    case 0: return ['এইমাত্র', 'এইমাত্র'];
+    case 1: return [`${bnNumber} সেকেন্ড আগে`, `${bnNumber} সেকেন্ডের মধ্যে`];
+    case 2: return ['১ মিনিট আগে', '১ মিনিটের মধ্যে'];
+    case 3: return [`${bnNumber} মিনিট আগে`, `${bnNumber} মিনিটের মধ্যে`];
+    case 4: return ['১ ঘণ্টা আগে', '১ ঘণ্টার মধ্যে'];
+    case 5: return [`${bnNumber} ঘণ্টা আগে`, `${bnNumber} ঘণ্টার মধ্যে`];
+    case 6: return ['১ দিন আগে', '১ দিনের মধ্যে'];
+    case 7: return [`${bnNumber} দিন আগে`, `${bnNumber} দিনের মধ্যে`];
+    case 8: return ['১ সপ্তাহ আগে', '১ সপ্তাহের মধ্যে'];
+    case 9: return [`${bnNumber} সপ্তাহ আগে`, `${bnNumber} সপ্তাহের মধ্যে`];
+    case 10: return ['১ মাস আগে', '১ মাসের মধ্যে'];
+    case 11: return [`${bnNumber} মাস আগে`, `${bnNumber} মাসের মধ্যে`];
+    case 12: return ['১ বছর আগে', '১ বছরের মধ্যে'];
+    case 13: return [`${bnNumber} বছর আগে`, `${bnNumber} বছরের মধ্যে`];
+    default: return [total_sec + ' সেকেন্ড আগে', total_sec + ' সেকেন্ডের মধ্যে'];
   }
-}
+};
+
+register('bn', localeFunc);
+
+export const formatTimeAgo = (date) => {
+  return format(date, 'bn');
+};

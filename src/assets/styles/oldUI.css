@@ -7017,7 +7017,7 @@ h4 {
 .cbtn_minx_dbpx58 {
   width: 400px;
   height: 190px;
-  background: #224150 !important;
+  background: #2c333a !important;
   margin: 10px;
   display: inline-block;
   border-radius: 10px;
@@ -7189,11 +7189,10 @@ h4 {
 .baxuse4x {
   display: flex;
   border-bottom: 1px solid white;
-  background: #163544;
+  background: #2c333a !important;
   color: rgb(255, 255, 255);
   padding: 12px;
   margin-bottom: 0px;
-  background: #163544;
   border-radius: 4px 4px 0px 0px;
   align-items: center;
 }
@@ -7223,7 +7222,7 @@ h4 {
 
 .bazar-img-details {
   overflow-y: auto;
-  background: #477185;
+  background: #1a1e23;
   display: flex;
   margin: auto;
   height: 420px;
@@ -7276,7 +7275,6 @@ h4 {
 @media (max-width: 704px) {
   .dxKXr_mboX74 button {
     width: 94%;
-    height: 136px;
   }
 
   .minxd_imagxds46 {
@@ -7284,8 +7282,7 @@ h4 {
   }
 
   .minxd_imagxds46 h4 {
-    height: 126px;
-    -webkit-line-clamp: 6;
+    -webkit-line-clamp: 5;
     font-size: 17px;
   }
 

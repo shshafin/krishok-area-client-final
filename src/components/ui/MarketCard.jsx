@@ -1,5 +1,5 @@
 import { baseApi } from "../../api";
-import { timeAgo } from "../../utils/timeAgo";
+
 
 export default function MarketCard({
   id,
@@ -33,7 +33,7 @@ export default function MarketCard({
               <time
                 style={{ fontSize: "small" }}
                 className="timeago">
-                {timeAgo(timeText)}
+                {timeText}
               </time>
             </p>
             {description}
