@@ -3,6 +3,7 @@
   min-height: 100vh;
   background: #111827;
 }
+
 .container {
   max-width: 80rem;
   margin: 0 auto;
@@ -14,12 +15,14 @@
   margin-bottom: 1.5rem;
   text-align: center;
 }
+
 .h1 {
   color: #fff;
   font-size: 1.875rem;
   font-weight: 800;
   margin-bottom: 0.35rem;
 }
+
 .sub {
   color: #9ca3af;
 }
@@ -27,8 +30,18 @@
 /* grid */
 .grid {
   display: grid;
+  grid-template-columns: 1fr;
+  /* 1 column on mobile */
   gap: .5rem;
   align-items: stretch;
+}
+
+/* 2 columns on large screens */
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    /* 2 columns side by side */
+  }
 }
 
 /* card */
@@ -40,6 +53,7 @@
   transition: box-shadow 0.2s ease, transform 0.1s ease, opacity 0.2s ease;
   cursor: pointer;
 }
+
 .card:hover {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
@@ -50,6 +64,7 @@
   gap: 0.75rem;
   margin-bottom: 0.75rem;
 }
+
 .avatar {
   width: 48px;
   height: 48px;
@@ -57,10 +72,12 @@
   border: 2px solid #d1d5db;
   object-fit: cover;
 }
+
 .topText {
   min-width: 0;
   flex: 1;
 }
+
 .name {
   color: #fff;
   font-weight: 600;
@@ -68,6 +85,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .bio {
   color: #9ca3af;
   font-size: 0.9rem;
@@ -82,6 +100,7 @@
   align-items: center;
   justify-content: space-between;
 }
+
 .followsLeft {
   display: flex;
   align-items: center;
@@ -89,6 +108,7 @@
   color: #9ca3af;
   font-size: 0.9rem;
 }
+
 .usersIcon {
   width: 16px;
   height: 16px;
@@ -104,19 +124,23 @@
   border-radius: 0.6rem;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
+
 .follow {
   background: #2563eb;
   color: #fff;
 }
+
 .following {
   background: #0b1220;
   color: #d1d5db;
   border: 1px solid #334155;
 }
+
 .following:hover {
   background: #111827;
   color: #fff;
 }
+
 .followIcon {
   width: 16px;
   height: 16px;
@@ -128,6 +152,7 @@
   display: flex;
   justify-content: center;
 }
+
 .loadMoreBtn {
   background: #111827;
   color: #e5e7eb;
@@ -136,6 +161,7 @@
   border-radius: 0.6rem;
   font-weight: 600;
 }
+
 .loadMoreBtn:hover {
   background: #0b1220;
 }
@@ -145,6 +171,7 @@
   margin-top: 2rem;
   text-align: center;
 }
+
 .statsCard {
   display: inline-flex;
   align-items: center;
@@ -154,18 +181,22 @@
   border-radius: 0.75rem;
   padding: 1rem 1.5rem;
 }
+
 .statBlock {
   text-align: center;
 }
+
 .statNum {
   color: #fff;
   font-size: 1.5rem;
   font-weight: 800;
 }
+
 .statLabel {
   color: #9ca3af;
   font-size: 0.9rem;
 }
+
 .divider {
   width: 1px;
   height: 2rem;
