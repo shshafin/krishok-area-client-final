@@ -1,0 +1,456 @@
+import { useState } from "react";
+import ExpandableText from "@/components/ui/ExpandableText";
+import { useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import PropTypes from "prop-types";
+import { format } from "timeago.js";
+import DeleteOutlineIcon from "@/assets/IconComponents/DeleteOutlineIcon";
+import { useVideoVisibility } from "@/hooks/useVideoVisibility";
+
+// --- CONSTANTS ---
+const TEXT_LIKED = "লাইক করা হয়েছে";
+const TEXT_LIKE = "লাইক";
+const TEXT_COMMENTS = "মন্তব্য";
+const TEXT_COMMENT = "মন্তব্য";
+const TEXT_COMMENT_PLACEHOLDER = "মন্তব্য করুন...";
+const TEXT_DELETE_POST_ARIA = "পোস্ট মুছে ফেলুন";
+const TEXT_MEDIA_ALT = "পোস্টের ছবি";
+const TEXT_LIKE_COUNT_SUFFIX = "লাইক";
+const TEXT_COMMENT_COUNT_SUFFIX = "মন্তব্য";
+
+// --- STYLES ---
+const cardStyles = {
+  backgroundColor: "#fff", // Or your dark mode bg
+  borderRadius: "8px",
+  marginBottom: "16px",
+  border: "1px solid #e5e7eb",
+  overflow: "hidden",
+};
+
+const headerStyles = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  padding: "12px 16px",
+};
+
+const avatarStyles = {
+  width: "40px",
+  height: "40px",
+  borderRadius: "50%",
+  objectFit: "cover",
+  marginRight: "10px",
+};
+
+const mediaContainerStyles = {
+  width: "100%",
+  height: "400px", // Fixed height for consistent UI
+  display: "grid",
+  gap: "2px",
+  backgroundColor: "#f0f2f5",
+  cursor: "pointer",
+  position: "relative",
+  // Default grid is 1 column
+  gridTemplateColumns: "1fr",
+  gridTemplateRows: "1fr",
+};
+
+const actionButtonStyles = {
+  flex: 1,
+  padding: "8px",
+  background: "transparent",
+  border: "none",
+  cursor: "pointer",
+  fontWeight: "600",
+  color: "#65676b",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "6px",
+  transition: "background 0.2s",
+};
+
+const commentInputStyles = {
+  width: "100%",
+  padding: "8px 12px",
+  borderRadius: "20px",
+  border: "1px solid #ddd",
+  backgroundColor: "#f0f2f5",
+  outline: "none",
+  resize: "none",
+};
+
+export default function PostCard({
+  post,
+  isOwner,
+  onLike,
+  onOpenLikes,
+  onOpenComments,
+  onDelete,
+  onAddComment,
+  onOpenPost,
+}) {
+  const [commentText, setCommentText] = useState("");
+  const location = useLocation();
+
+  // Video visibility hook
+  const videoRef = useVideoVisibility({ threshold: 0.3, priority: "normal" });
+
+  const showDeleteButton = Boolean(
+    isOwner && location?.pathname?.startsWith("/me")
+  );
+
+  const submitComment = () => {
+    const value = commentText.trim();
+    if (!value) return;
+    onAddComment?.(post.id, value);
+    setCommentText("");
+  };
+
+  const handleOpenPost = () => {
+    onOpenPost?.(post.id);
+  };
+
+  const handleMediaKeyDown = (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handleOpenPost();
+    }
+  };
+
+  const mediaInteractableProps = onOpenPost
+    ? {
+        role: "button",
+        tabIndex: 0,
+        onClick: handleOpenPost,
+        onKeyDown: handleMediaKeyDown,
+      }
+    : {};
+
+  // --- GALLERY LOGIC ---
+  const allGalleryItems = Array.isArray(post.mediaGallery)
+    ? post.mediaGallery.filter((item) => item && item.src)
+    : [];
+
+  const totalItems = allGalleryItems.length;
+  const displayItems = allGalleryItems.slice(0, 4);
+  const extraImageCount = totalItems > 4 ? totalItems - 4 : 0;
+
+  // Dynamic Grid Configuration based on item count
+  const getGridConfig = (count) => {
+    if (count === 1) return { gridTemplateColumns: "1fr" };
+    if (count === 2) return { gridTemplateColumns: "1fr 1fr" };
+    if (count === 3)
+      return {
+        gridTemplateColumns: "2fr 1fr",
+        gridTemplateRows: "1fr 1fr",
+      };
+    if (count >= 4)
+      return {
+        gridTemplateColumns: "2fr 1fr",
+        gridTemplateRows: "1fr 1fr 1fr",
+      };
+    return {};
+  };
+
+  // Helper to determine item span in the grid
+  const getItemStyle = (index, count) => {
+    const baseStyle = {
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+      display: "block",
+    };
+
+    // Logic for "Facebook Style" collage
+    if (count === 3 && index === 0) {
+      // First item takes full height on left
+      return { ...baseStyle, gridRow: "span 2" };
+    }
+    if (count >= 4 && index === 0) {
+      // First item takes full height on left (span 3 rows)
+      return { ...baseStyle, gridRow: "span 3" };
+    }
+
+    return baseStyle;
+  };
+
+  return (
+    <article
+      className="post-card"
+      style={cardStyles}>
+      {/* HEADER */}
+      <header style={headerStyles}>
+        <NavLink
+          to={
+            post.author?._id
+              ? `/user/${post.author._id}`
+              : `/user/${post.author.id ?? post.author._id ?? ""}`
+          }
+          style={{
+            textDecoration: "none",
+            display: "flex",
+            alignItems: "center",
+            color: "inherit",
+          }}>
+          <img
+            src={post.author.avatar}
+            alt={post.author.name}
+            style={avatarStyles}
+          />
+          <div className="post-card-author">
+            <h5 style={{ margin: 0, fontSize: "15px", fontWeight: "600" }}>
+              {post.author.name}
+            </h5>
+            <span style={{ fontSize: "12px", color: "#65676b" }}>
+              {format(post.createdAt)}
+            </span>
+          </div>
+        </NavLink>
+        {showDeleteButton && (
+          <button
+            type="button"
+            className="post-delete-btn"
+            aria-label={TEXT_DELETE_POST_ARIA}
+            onClick={() => onDelete?.(post.id)}
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              color: "#65676b",
+            }}>
+            <DeleteOutlineIcon width={20} />
+          </button>
+        )}
+      </header>
+
+      {/* TEXT CONTENT */}
+      {post.content && (
+        <div style={{ padding: "0 16px 12px 16px", fontSize: "15px" }}>
+          <ExpandableText text={post.content} />
+        </div>
+      )}
+
+      {/* MEDIA GALLERY */}
+      {totalItems > 0 && (
+        <div
+          className="post-media-grid"
+          {...mediaInteractableProps}
+          style={{
+            ...mediaContainerStyles,
+            ...getGridConfig(displayItems.length),
+          }}>
+          {displayItems.map((item, index) => {
+            const isOverflowItem = extraImageCount > 0 && index === 3;
+            const itemStyle = getItemStyle(index, displayItems.length);
+            const key = item.src ?? `media-${index}`;
+
+            return (
+              <div
+                key={key}
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  height: "100%",
+                  gridRow: itemStyle.gridRow, // Apply row span if needed
+                  overflow: "hidden",
+                }}>
+                {item.type === "video" ? (
+                  <video
+                    ref={index === 0 ? videoRef : null}
+                    src={item.src}
+                    style={{ ...itemStyle, width: "100%", height: "100%" }}
+                    muted
+                    preload="metadata"
+                  />
+                ) : (
+                  <img
+                    src={item.src}
+                    alt={post.content || TEXT_MEDIA_ALT}
+                    style={{ ...itemStyle, width: "100%", height: "100%" }}
+                  />
+                )}
+
+                {/* Video Icon Overlay */}
+                {item.type === "video" && !isOverflowItem && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      width: "40px",
+                      height: "40px",
+                      backgroundColor: "rgba(0,0,0,0.5)",
+                      borderRadius: "50%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "white",
+                      pointerEvents: "none",
+                    }}>
+                    ▶
+                  </div>
+                )}
+
+                {/* +More Overlay */}
+                {isOverflowItem && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      backgroundColor: "rgba(0, 0, 0, 0.5)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "#fff",
+                      fontSize: "24px",
+                      fontWeight: "bold",
+                    }}>
+                    +{extraImageCount}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ENGAGEMENT STATS */}
+      <div
+        style={{
+          padding: "10px 16px",
+          display: "flex",
+          justifyContent: "space-between",
+          fontSize: "14px",
+          color: "#65676b",
+          borderBottom: "1px solid #f0f2f5",
+        }}>
+        <button
+          type="button"
+          onClick={() => onOpenLikes?.(post.id)}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            color: "inherit",
+            padding: 0,
+          }}>
+          {post.likes > 0 && `${post.likes} ${TEXT_LIKE_COUNT_SUFFIX}`}
+        </button>
+        <button
+          type="button"
+          onClick={() => onOpenComments?.(post.id)}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            color: "inherit",
+            padding: 0,
+          }}>
+          {post.comments.length > 0 &&
+            `${post.comments.length} ${TEXT_COMMENT_COUNT_SUFFIX}`}
+        </button>
+      </div>
+
+      {/* ACTION BUTTONS (Like / Comment) */}
+      <div
+        style={{
+          display: "flex",
+          borderBottom: "1px solid #f0f2f5",
+          padding: "4px 0",
+        }}>
+        <button
+          type="button"
+          style={{
+            ...actionButtonStyles,
+            color: post.liked ? "#1877F2" : "#65676b", // Blue if liked
+          }}
+          onClick={() => onLike?.(post.id)}>
+          {/* You can add SVG Icons here */}
+          <span>{post.liked ? TEXT_LIKED : TEXT_LIKE}</span>
+        </button>
+        <button
+          type="button"
+          style={actionButtonStyles}
+          onClick={() => onOpenComments?.(post.id)}>
+          <span>{TEXT_COMMENTS}</span>
+        </button>
+      </div>
+
+      {/* COMMENT INPUT */}
+      <div
+        className="comment-form"
+        style={{ padding: "12px 16px", display: "flex", gap: "8px" }}>
+        <img
+          src={post.author.avatar}
+          style={{ width: "32px", height: "32px", borderRadius: "50%" }}
+          alt=""
+        />
+        <div style={{ flex: 1, position: "relative" }}>
+          <textarea
+            name="comment"
+            rows={1}
+            value={commentText}
+            onChange={(event) => setCommentText(event.target.value)}
+            placeholder={TEXT_COMMENT_PLACEHOLDER}
+            style={commentInputStyles}
+          />
+        </div>
+        <button
+          type="button"
+          disabled={!commentText.trim()}
+          onClick={submitComment}
+          style={{
+            border: "none",
+            background: "none",
+            color: commentText.trim() ? "#1877F2" : "#bcc0c4",
+            fontWeight: "600",
+            cursor: commentText.trim() ? "pointer" : "default",
+          }}>
+          ▷
+        </button>
+      </div>
+    </article>
+  );
+}
+
+PostCard.propTypes = {
+  post: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    content: PropTypes.string,
+    createdAt: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.instanceOf(Date),
+    ]).isRequired,
+    mediaGallery: PropTypes.arrayOf(
+      PropTypes.shape({
+        type: PropTypes.oneOf(["image", "video"]),
+        src: PropTypes.string,
+      })
+    ),
+    likes: PropTypes.number,
+    liked: PropTypes.bool,
+    author: PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      avatar: PropTypes.string.isRequired,
+      _id: PropTypes.string,
+      id: PropTypes.string,
+    }).isRequired,
+    comments: PropTypes.array,
+  }).isRequired,
+  isOwner: PropTypes.bool,
+  onLike: PropTypes.func,
+  onOpenLikes: PropTypes.func,
+  onOpenComments: PropTypes.func,
+  onDelete: PropTypes.func,
+  onAddComment: PropTypes.func,
+  onOpenPost: PropTypes.func,
+};
+
+PostCard.defaultProps = {
+  isOwner: false,
+};

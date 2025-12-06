@@ -11,6 +11,7 @@ import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 
 import CommentBox from "../ui/CommentBox";
+import ExpandableText from "../ui/ExpandableText";
 import { baseApi } from "../../api";
 import { likePost, commentOnPost } from "@/api/authApi";
 import { Video, Zoom } from "yet-another-react-lightbox/plugins";
@@ -166,7 +167,7 @@ export default function Post({
       <section className="post-main">
         {text && (
           <div className="content">
-            <p>{text}</p>
+            <ExpandableText text={text} />
           </div>
         )}
 

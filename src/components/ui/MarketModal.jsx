@@ -28,7 +28,14 @@ export default function MarketModal({
                 alt="bazar user image"
               />
               <h4>
-                {name}
+                {(() => {
+                  if (!name) return "";
+                  const parts = name.trim().split(/\s+/);
+                  if (parts.length > 1) {
+                    return `${parts[0]} ${parts[1].slice(0, 2)}..`;
+                  }
+                  return name;
+                })()}
                 <span>{location}</span>
               </h4>
             </a>

@@ -1046,8 +1046,7 @@
   }
 
   .comment-list {
-    margin-bottom: 5rem;
-    min-height: 20vh;
+    margin-bottom: 20rem;
   }
 
   .comment-input-area {
@@ -1143,18 +1142,17 @@
   display: flex;
   height: 100%;
   overflow: hidden;
-  overflow-x: auto;
+  overflow-y: auto;
   flex-direction: column;
   gap: 1rem;
 }
 
 .comment-list {
   display: flex;
-  overflow-x: auto;
   flex-direction: column;
   gap: 1rem;
   padding-right: 4px;
-  padding: 2rem auto;
+  margin-bottom: 10rem;
 }
 
 

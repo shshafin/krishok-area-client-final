@@ -4,6 +4,7 @@ import MarketModal from "@/components/ui/MarketModal";
 import MarketCreateModal from "@/components/ui/MarketCreateModal";
 import AddPost from "@/assets/icons/add.png";
 import { fetchMe, createSeedPrice, fetchAllSeedPrices } from "@/api/authApi"; // fetch current user
+import { formatTimeAgo } from "@/utils/timeAgo";
 
 export default function SeedMarketPage() {
   const [items, setItems] = useState([]);
@@ -39,7 +40,7 @@ export default function SeedMarketPage() {
             image: item.image,
             contact: item.user?.phone,
             description: item.description || "কোনো বিবরণ নেই",
-            timeText: new Date(item.createdAt).toLocaleString("bn-BD"),
+            timeText: formatTimeAgo(item.createdAt),
           }));
           setItems(formatted);
         }
@@ -134,7 +135,7 @@ export default function SeedMarketPage() {
                 image: res.data.image,
                 contact: user?.phone,
                 description: res.data.description || "কোনো বিবরণ নেই",
-                timeText: new Date(res.data.createdAt).toLocaleString("bn-BD"),
+                timeText: formatTimeAgo(res.data.createdAt),
               },
               ...prev,
             ]);

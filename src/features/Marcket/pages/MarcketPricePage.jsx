@@ -5,6 +5,7 @@ import MarketCreateModal from "@/components/ui/MarketCreateModal";
 import AddPost from "@/assets/icons/add.png";
 import { createMarketPrice, fetchMe } from "@/api/authApi";
 import { fetchAllMarketPrices } from "@/api/authApi";
+import { formatTimeAgo } from "@/utils/timeAgo";
 
 export default function MarcketPricePage() {
   const [items, setItems] = useState([]);
@@ -40,7 +41,7 @@ export default function MarcketPricePage() {
             image: item.image,
             title: item.user?.name || "অজানা ব্যবহারকারী",
             description: item.description || "কোনো বিবরণ নেই",
-            timeText: new Date(item.createdAt).toLocaleString("bn-BD"),
+            timeText: formatTimeAgo(item.createdAt),
           }));
           setItems(formatted);
         }
@@ -134,7 +135,7 @@ export default function MarcketPricePage() {
                 image: res.data.image,
                 title: user?.name || "অজানা ব্যবহারকারী",
                 description: res.data.description || "কোনো বিবরণ নেই",
-                timeText: new Date(res.data.createdAt).toLocaleString("bn-BD"),
+                timeText: formatTimeAgo(res.data.createdAt),
               },
               ...prev,
             ]);

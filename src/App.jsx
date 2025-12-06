@@ -24,6 +24,7 @@ import ProductDetails from "./features/company/components/ProductDetails";
 import UserProfilePage from "./features/profile/pages/UserProfile";
 import GallerySection from "./features/gallery/components/GallerySection";
 import GalleryDetail from "./features/gallery/components/GalleryDetail";
+import VideoDetailPage from "./features/gallery/pages/VideoDetailPage";
 
 // Admin Pages (lazy-loaded)
 const AdminLayout = lazy(() =>
@@ -53,6 +54,9 @@ const AddCompanyCategoryPage = lazy(() =>
 );
 const AddProductPage = lazy(() =>
   import("./features/admin/pages/AddProductPage")
+);
+const EditProductPage = lazy(() =>
+  import("./features/admin/pages/EditProductPage")
 );
 const ManagePostsPage = lazy(() =>
   import("./features/admin/pages/ManagePostsPage")
@@ -196,6 +200,15 @@ function App() {
           element={
             <PrivateRoute>
               <Gallery type="video" />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/video/:videoId"
+          element={
+            <PrivateRoute>
+              <VideoDetailPage />
             </PrivateRoute>
           }
         />
@@ -350,6 +363,10 @@ function App() {
           <Route
             path="products/add"
             element={<AddProductPage />}
+          />
+          <Route
+            path="products/edit/:id"
+            element={<EditProductPage />}
           />
           <Route
             path="products/manage-details"

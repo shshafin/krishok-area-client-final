@@ -12,6 +12,7 @@ import { fetchPosts, deletePost } from "@/api/authApi";
 import "../styles/adminScoped.css";
 import config from "../../../../config";
 import { baseApi } from "../../../api";
+import ExpandableText from "@/components/ui/ExpandableText";
 
 const PAGE_SIZE = 5;
 const isVideoFile = (url) => /\.(mp4|webm|ogg)$/i.test(url);
@@ -174,9 +175,8 @@ export default function ManagePostsPage() {
           <div className="manage-posts-grid">
             {items.map((post) => (
               <article
-                className={`manage-post-card ${
-                  removing[post.id] ? "is-removing" : ""
-                }`}
+                className={`manage-post-card ${removing[post.id] ? "is-removing" : ""
+                  }`}
                 key={post.id}>
                 <header className="manage-post-header">
                   <img
@@ -205,7 +205,9 @@ export default function ManagePostsPage() {
                 </header>
 
                 <div className="manage-post-body">
-                  <p className="manage-post-text">{post.text}</p>
+                  <div className="manage-post-text">
+                    <ExpandableText text={post.text} />
+                  </div>
 
                   {/* Media */}
                   <div className="manage-post-media">
@@ -283,11 +285,11 @@ export default function ManagePostsPage() {
           lightbox
             ? lightbox.type === "video"
               ? [
-                  {
-                    type: "video",
-                    sources: [{ src: lightbox.url, type: "video/mp4" }],
-                  },
-                ]
+                {
+                  type: "video",
+                  sources: [{ src: lightbox.url, type: "video/mp4" }],
+                },
+              ]
               : [{ src: lightbox.url }]
             : []
         }

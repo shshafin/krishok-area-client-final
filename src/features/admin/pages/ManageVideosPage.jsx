@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import DeleteOutlineIcon from "@/assets/IconComponents/DeleteOutlineIcon";
-import { fetchAllVideos, deleteVideo } from "@/api/authApi";
+import EditBadgeIcon from "@/assets/IconComponents/EditBadgeIcon";
+import { fetchAllVideos, deleteVideo, editVideo } from "@/api/authApi";
 import "../styles/adminScoped.css";
 import { baseApi } from "../../../api";
 
@@ -39,6 +40,53 @@ export default function ManageVideosPage() {
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [removing, setRemoving] = useState({});
+  const [editingVideo, setEditingVideo] = useState(null);
+  const [editForm, setEditForm] = useState({
+    title: "",
+    description: "",
+    videoUrl: "",
+  });
+
+  // Edit handlers
+  const handleEdit = (video) => {
+    setEditingVideo(video);
+    setEditForm({
+      title: video.title || "",
+      description: video.description || "",
+      videoUrl: video.videoUrl || "",
+    });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingVideo(null);
+    setEditForm({ title: "", description: "", videoUrl: "" });
+  };
+
+  const handleSubmitEdit = async () => {
+    if (!editingVideo) return;
+    try {
+      const res = await editVideo(editingVideo._id, editForm);
+      if (res?.success) {
+        setVideos((prev) =>
+          prev.map((v) =>
+            v._id === editingVideo._id ? { ...v, ...editForm } : v
+          )
+        );
+        setFiltered((prev) =>
+          prev.map((v) =>
+            v._id === editingVideo._id ? { ...v, ...editForm } : v
+          )
+        );
+        toast.success("Video updated successfully");
+        handleCancelEdit();
+      } else {
+        toast.error("Failed to update video");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Server error while updating video");
+    }
+  };
 
   // Fetch all videos
   useEffect(() => {
@@ -170,9 +218,8 @@ export default function ManageVideosPage() {
                     {filtered.map((video) => (
                       <article
                         key={video._id}
-                        className={`manage-video-card ${
-                          removing[video._id] ? "is-removing" : ""
-                        }`}>
+                        className={`manage-video-card ${removing[video._id] ? "is-removing" : ""
+                          }`}>
                         <a
                           href={video.videoUrl}
                           target="_blank"
@@ -217,7 +264,17 @@ export default function ManageVideosPage() {
                         </a>
 
                         <div className="manage-video-body">
-                          <p className="manage-video-description">
+                          <h4 className="manage-video-title">
+                            {video.title || "No Title"}
+                          </h4>
+                          <p
+                            className="manage-video-description"
+                            style={{
+                              display: "-webkit-box",
+                              WebkitLineClamp: 3,
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                            }}>
                             {video.description || "No description available"}
                           </p>
                         </div>
@@ -227,12 +284,22 @@ export default function ManageVideosPage() {
                             {formatTimestamp(video.createdAt)}
                           </span>
 
-                          <button
-                            type="button"
-                            className="admin-icon-btn admin-trash-btn"
-                            onClick={() => handleDelete(video._id)}>
-                            <DeleteOutlineIcon />
-                          </button>
+                          <div className="d-flex gap-2">
+                            <button
+                              type="button"
+                              className="admin-icon-btn admin-edit-btn"
+                              onClick={() => handleEdit(video)}
+                              title="Edit Video">
+                              <EditBadgeIcon width={20} height={20} />
+                            </button>
+                            <button
+                              type="button"
+                              className="admin-icon-btn admin-trash-btn"
+                              onClick={() => handleDelete(video._id)}
+                              title="Delete Video">
+                              <DeleteOutlineIcon />
+                            </button>
+                          </div>
                         </footer>
                       </article>
                     ))}
@@ -247,6 +314,64 @@ export default function ManageVideosPage() {
           </div>
         </div>
       </section>
+
+      {/* Edit Modal */}
+      {editingVideo && (
+        <div className="admin-modal-backdrop">
+          <div className="admin-modal">
+            <div className="admin-modal-header">
+              <h5>Edit Video</h5>
+            </div>
+            <div className="admin-modal-body">
+              <div className="form-group">
+                <label>Video Title</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={editForm.title}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, title: e.target.value })
+                  }
+                />
+              </div>
+              <div className="form-group">
+                <label>Description</label>
+                <textarea
+                  className="form-control"
+                  rows="3"
+                  value={editForm.description}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, description: e.target.value })
+                  }
+                />
+              </div>
+              <div className="form-group">
+                <label>Video URL (YouTube)</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={editForm.videoUrl}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, videoUrl: e.target.value })
+                  }
+                />
+              </div>
+            </div>
+            <div className="admin-modal-footer">
+              <button
+                className="btn btn-outline-secondary btn-sm"
+                onClick={handleCancelEdit}>
+                Cancel
+              </button>
+              <button
+                className="btn btn-success btn-sm"
+                onClick={handleSubmitEdit}>
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
