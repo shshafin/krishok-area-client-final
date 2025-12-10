@@ -1,15 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import PropTypes from "prop-types";
-import { toast } from "react-hot-toast"; // Added for error feedback
 import Modal from "./Modal";
 import { baseApi } from "../../../api";
 
 const ACCEPTED_MEDIA =
   "image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime";
-
-// Default limits matching your backend
-const DEFAULT_MAX_IMAGES = 3;
-const DEFAULT_MAX_VIDEOS = 3;
+const MAX_ATTACHMENTS = 6;
 const DEFAULT_AVATAR =
   "https://i.postimg.cc/fRVdFSbg/e1ef6545-86db-4c0b-af84-36a726924e74.png";
 
@@ -42,8 +38,7 @@ export default function PostComposerModal({
   onClose,
   onSubmit,
   viewer,
-  maxImages = DEFAULT_MAX_IMAGES,
-  maxVideos = DEFAULT_MAX_VIDEOS,
+  maxAttachments = MAX_ATTACHMENTS,
 }) {
   const [text, setText] = useState("");
   const [attachments, setAttachments] = useState([]);
@@ -82,7 +77,6 @@ export default function PostComposerModal({
     return { total: attachments.length, imageCount, videoCount };
   }, [attachments]);
 
-  // --- FIXED: Validates Images and Videos Separately ---
   const handleFilesChange = (event) => {
     const selectedFiles = Array.from(event.target.files ?? []);
     if (!selectedFiles.length) {
@@ -90,49 +84,14 @@ export default function PostComposerModal({
       return;
     }
 
-    // Current counts
-    let currentImageCount = attachments.filter(
-      (a) => a.type === "image"
-    ).length;
-    let currentVideoCount = attachments.filter(
-      (a) => a.type === "video"
-    ).length;
-
-    const newAttachments = [];
-    let imageLimitReached = false;
-    let videoLimitReached = false;
-
-    selectedFiles.forEach((file) => {
-      const isVideo = file.type.startsWith("video/");
-      const isImage = file.type.startsWith("image/");
-
-      if (isVideo) {
-        if (currentVideoCount < maxVideos) {
-          newAttachments.push(createAttachment(file));
-          currentVideoCount++;
-        } else {
-          videoLimitReached = true;
-        }
-      } else if (isImage) {
-        if (currentImageCount < maxImages) {
-          newAttachments.push(createAttachment(file));
-          currentImageCount++;
-        } else {
-          imageLimitReached = true;
-        }
-      }
+    setAttachments((prev) => {
+      if (prev.length >= maxAttachments) return prev;
+      const remainingSlots = maxAttachments - prev.length;
+      const nextFiles = selectedFiles
+        .slice(0, remainingSlots)
+        .map(createAttachment);
+      return [...prev, ...nextFiles];
     });
-
-    if (imageLimitReached) {
-      toast.error(`Maximum ${maxImages} images allowed.`);
-    }
-    if (videoLimitReached) {
-      toast.error(`Maximum ${maxVideos} videos allowed.`);
-    }
-
-    if (newAttachments.length > 0) {
-      setAttachments((prev) => [...prev, ...newAttachments]);
-    }
 
     event.target.value = "";
   };
@@ -169,7 +128,6 @@ export default function PostComposerModal({
     try {
       setSubmitting(true);
       await onSubmit?.(payload);
-      // Cleanup
       attachments.forEach((item) => {
         if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
       });
@@ -247,8 +205,8 @@ export default function PostComposerModal({
         <label className="composer-upload">
           <strong>মিডিয়া যুক্ত করুন</strong>
           <p style={{ marginTop: "0.35rem", color: "#64748b" }}>
-            সমর্থিত ফরম্যাট: JPG, PNG, GIF, MP4, WEBM (সর্বোচ্চ {maxImages} ছবি
-            এবং {maxVideos} ভিডিও)
+            সমর্থিত ফরম্যাট: JPG, PNG, GIF, MP4, WEBM (সর্বোচ্চ {maxAttachments}{" "}
+            ফাইল)
           </p>
           <input
             name="attachments"
@@ -266,11 +224,11 @@ export default function PostComposerModal({
             <div className="composer-media-summary">
               <span>{mediaSummary.total} attachment(s)</span>
               <span>
-                {mediaSummary.imageCount} / {maxImages} image
+                {mediaSummary.imageCount} image
                 {mediaSummary.imageCount === 1 ? "" : "s"}
               </span>
               <span>
-                {mediaSummary.videoCount} / {maxVideos} video
+                {mediaSummary.videoCount} video
                 {mediaSummary.videoCount === 1 ? "" : "s"}
               </span>
             </div>
@@ -286,7 +244,6 @@ export default function PostComposerModal({
                         src={item.previewUrl}
                         controls
                         autoPlay
-                        muted
                       />
                     ) : (
                       <img
@@ -339,8 +296,7 @@ PostComposerModal.propTypes = {
     profileImage: PropTypes.string,
     profile: PropTypes.string,
   }),
-  maxImages: PropTypes.number,
-  maxVideos: PropTypes.number,
+  maxAttachments: PropTypes.number,
 };
 
 PostComposerModal.defaultProps = {
@@ -349,6 +305,5 @@ PostComposerModal.defaultProps = {
   onClose: undefined,
   onSubmit: undefined,
   viewer: undefined,
-  maxImages: DEFAULT_MAX_IMAGES,
-  maxVideos: DEFAULT_MAX_VIDEOS,
+  maxAttachments: MAX_ATTACHMENTS,
 };

@@ -43,11 +43,12 @@ const normalizeMedia = (postImages = [], postVideos = []) => {
     src: `${baseApi}${vid}`,
   }));
 
+  // Merge: Videos first, then Images (or however you prefer)
   const combined = [...videos, ...images];
 
   return {
     media: combined.length > 0 ? combined[0] : null,
-    mediaGallery: combined,
+    mediaGallery: combined, // This is what PostCard looks at
   };
 };
 
@@ -67,24 +68,19 @@ export default function ProfilePage() {
   const [allPostsOpen, setAllPostsOpen] = useState(false);
   const [followersOpen, setFollowersOpen] = useState(false);
   const [followingOpen, setFollowingOpen] = useState(false);
-
   const [activePostId, setActivePostId] = useState(null);
   const [activePostMode, setActivePostMode] = useState("comments");
-  const [selectedIndex, setSelectedIndex] = useState(0); // <--- ADDED THIS STATE
 
   const composerRef = useRef(null);
 
   const closeActivePost = useCallback(() => {
     setActivePostId(null);
     setActivePostMode("comments");
-    setSelectedIndex(0); // Reset index on close
   }, []);
 
-  // --- UPDATED: Accepts index ---
-  const openPostComments = useCallback((postId, index = 0) => {
+  const openPostComments = useCallback((postId) => {
     setActivePostMode("comments");
     setActivePostId(postId);
-    setSelectedIndex(index); // Store the clicked index
   }, []);
 
   const openPostLikes = useCallback((postId) => {
@@ -92,26 +88,33 @@ export default function ProfilePage() {
     setActivePostId(postId);
   }, []);
 
+  // Load current user, posts, and seed prices
   useEffect(() => {
     const loadCurrentUserAndProfile = async () => {
       try {
         setLoading(true);
 
+        // 1. Logged in user data
         const meResponse = await fetchMe();
         const meData = meResponse?.data ?? meResponse;
         setCurrentUser(meData);
 
+        // 2. Profile owner userId
         let profileUserId = username ?? resolveUserId(meData);
         if (!profileUserId) throw new Error("Profile user not found");
 
+        // 3. Fetch user posts
         const postsResponse = await fetchUserPosts(profileUserId);
         const fetchedPosts = postsResponse ?? [];
 
+        // 4. Normalize posts
         const normalizedPosts = (fetchedPosts.posts || []).map((post) => {
+          // --- FIX START: Use the helper to merge videos and images ---
           const { media, mediaGallery } = normalizeMedia(
             post.images,
             post.videos
           );
+          // --- FIX END ---
 
           return {
             ...post,
@@ -147,11 +150,14 @@ export default function ProfilePage() {
               },
               createdAt: c.createdAt,
             })),
+
+            // Apply the fixed media objects
             media,
             mediaGallery,
           };
         });
 
+        // Profile overview
         setProfile(
           meData?._id === profileUserId
             ? meData
@@ -161,6 +167,7 @@ export default function ProfilePage() {
         setFollowers(meData.followers ?? []);
         setFollowing(meData.following ?? []);
 
+        // 5. Fetch seed prices
         if (profileUserId === resolveUserId(meData)) {
           try {
             const seedsResponse = await fetchMySeedPrices();
@@ -222,6 +229,7 @@ export default function ProfilePage() {
     [posts?.length, followers.length, following.length]
   );
 
+  // Handlers
   const toggleLike = async (postId) => {
     const post = posts.find((p) => p.id === postId);
     if (!post) return;
@@ -316,6 +324,7 @@ export default function ProfilePage() {
       toast.error("Invalid price ID");
       return;
     }
+
     try {
       await deleteSeedPrice(priceId);
       setMySeedPrices((prev) => prev.filter((s) => s._id !== priceId));
@@ -338,13 +347,17 @@ export default function ProfilePage() {
       payload.videos?.forEach((file) => formData.append("videos", file));
 
       const response = await createPost(formData);
+
       const postData = response?.data?.post || response?.post || response;
 
+      // --- FIX START: Use the helper to merge videos and images for new post ---
       const { media, mediaGallery } = normalizeMedia(
         postData.images,
         postData.videos
       );
+      // --- FIX END ---
 
+      // UI update
       setPosts((prev) => [
         {
           ...postData,
@@ -365,6 +378,8 @@ export default function ProfilePage() {
           likes: 0,
           liked: false,
           comments: [],
+
+          // Apply fixed media objects
           media,
           mediaGallery,
         },
@@ -447,7 +462,7 @@ export default function ProfilePage() {
               onOpenLikes={openPostLikes}
               onDelete={deletePostHandler}
               onAddComment={addComment}
-              onOpenPost={openPostComments} // Accepts (id, index) now
+              onOpenPost={openPostComments}
             />
           ))}
         </section>
@@ -458,7 +473,7 @@ export default function ProfilePage() {
         onClose={() => setAllPostsOpen(false)}
         posts={posts}
         onSelect={(post) => {
-          openPostComments(post.id); // Defaults to index 0 for list view
+          openPostComments(post.id);
           setAllPostsOpen(false);
         }}
       />
@@ -481,7 +496,6 @@ export default function ProfilePage() {
         open={Boolean(activePostId)}
         post={posts.find((p) => p.id === activePostId)}
         mode={activePostMode}
-        initialSlideIndex={selectedIndex} // <--- PASSED HERE
         onClose={closeActivePost}
         onToggleLike={toggleLike}
         onAddComment={addComment}

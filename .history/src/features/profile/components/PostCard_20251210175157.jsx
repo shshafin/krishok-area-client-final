@@ -1,12 +1,14 @@
 import { useState } from "react";
 import ExpandableText from "@/components/ui/ExpandableText";
-import { useLocation, NavLink } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import PropTypes from "prop-types";
 import { format } from "timeago.js";
 import DeleteOutlineIcon from "@/assets/IconComponents/DeleteOutlineIcon";
 import { useVideoVisibility } from "@/hooks/useVideoVisibility";
 
-const TEXT_LIKED = "লাইক করা হয়েছে";
+// --- TEXT CONSTANTS ---
+const TEXT_LIKED = "লাইক করা হয়েছে";
 const TEXT_LIKE = "লাইক";
 const TEXT_COMMENTS = "মন্তব্য";
 const TEXT_COMMENT = "মন্তব্য";
@@ -16,6 +18,7 @@ const TEXT_MEDIA_ALT = "পোস্টের ছবি";
 const TEXT_LIKE_COUNT_SUFFIX = "লাইক";
 const TEXT_COMMENT_COUNT_SUFFIX = "মন্তব্য";
 
+// --- STYLES ---
 const mediaContainerStyles = {
   width: "100%",
   height: "350px",
@@ -62,6 +65,15 @@ export default function PostCard({
       handleOpenPost(index);
     }
   };
+
+  // const mediaInteractableProps = onOpenPost
+  //   ? {
+  //       role: "button",
+  //       tabIndex: 0,
+  //       onClick: () => handleOpenPost(0),
+  //       onKeyDown: (e) => handleMediaKeyDown(e, 0),
+  //     }
+  //   : {};
 
   const allGalleryItems = Array.isArray(post.mediaGallery)
     ? post.mediaGallery.filter((item) => item && item.src)
@@ -173,7 +185,7 @@ export default function PostCard({
                   gridRow: itemStyle.gridRow,
                   overflow: "hidden",
                   cursor: "pointer",
-                  backgroundColor: "#0B0E1C",
+                  backgroundColor: "#000",
                 }}>
                 {item.type === "video" ? (
                   <video

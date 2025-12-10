@@ -1,12 +1,14 @@
 import { useState } from "react";
 import ExpandableText from "@/components/ui/ExpandableText";
-import { useLocation, NavLink } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import PropTypes from "prop-types";
 import { format } from "timeago.js";
 import DeleteOutlineIcon from "@/assets/IconComponents/DeleteOutlineIcon";
 import { useVideoVisibility } from "@/hooks/useVideoVisibility";
 
-const TEXT_LIKED = "লাইক করা হয়েছে";
+// --- TEXT CONSTANTS ---
+const TEXT_LIKED = "লাইক করা হয়েছে";
 const TEXT_LIKE = "লাইক";
 const TEXT_COMMENTS = "মন্তব্য";
 const TEXT_COMMENT = "মন্তব্য";
@@ -16,6 +18,7 @@ const TEXT_MEDIA_ALT = "পোস্টের ছবি";
 const TEXT_LIKE_COUNT_SUFFIX = "লাইক";
 const TEXT_COMMENT_COUNT_SUFFIX = "মন্তব্য";
 
+// --- STYLES ---
 const mediaContainerStyles = {
   width: "100%",
   height: "350px",
@@ -40,7 +43,9 @@ export default function PostCard({
 }) {
   const [commentText, setCommentText] = useState("");
   const location = useLocation();
+
   const videoRef = useVideoVisibility({ threshold: 0.3, priority: "normal" });
+
   const showDeleteButton = Boolean(
     isOwner && location?.pathname?.startsWith("/me")
   );
@@ -52,6 +57,7 @@ export default function PostCard({
     setCommentText("");
   };
 
+  // --- FIXED: Accept index and pass it to parent ---
   const handleOpenPost = (index = 0) => {
     onOpenPost?.(post.id, index);
   };
@@ -63,6 +69,16 @@ export default function PostCard({
     }
   };
 
+  // Container props now default to index 0
+  const mediaInteractableProps = onOpenPost
+    ? {
+        role: "button",
+        tabIndex: 0,
+        onClick: () => handleOpenPost(0),
+        onKeyDown: (e) => handleMediaKeyDown(e, 0),
+      }
+    : {};
+
   const allGalleryItems = Array.isArray(post.mediaGallery)
     ? post.mediaGallery.filter((item) => item && item.src)
     : [];
@@ -72,16 +88,20 @@ export default function PostCard({
   const extraImageCount = totalItems > 4 ? totalItems - 4 : 0;
 
   const getGridConfig = (count) => {
-    if (count === 1)
+    if (count === 1) {
       return {
         gridTemplateColumns: "1fr",
         height: "auto",
         maxHeight: "500px",
         aspectRatio: "auto",
       };
+    }
     if (count === 2) return { gridTemplateColumns: "1fr 1fr" };
     if (count === 3)
-      return { gridTemplateColumns: "2fr 1fr", gridTemplateRows: "1fr 1fr" };
+      return {
+        gridTemplateColumns: "2fr 1fr",
+        gridTemplateRows: "1fr 1fr",
+      };
     if (count >= 4)
       return {
         gridTemplateColumns: "2fr 1fr",
@@ -97,8 +117,13 @@ export default function PostCard({
       objectFit: "cover",
       display: "block",
     };
-    if (count === 3 && index === 0) return { ...baseStyle, gridRow: "span 2" };
-    if (count >= 4 && index === 0) return { ...baseStyle, gridRow: "span 3" };
+
+    if (count === 3 && index === 0) {
+      return { ...baseStyle, gridRow: "span 2" };
+    }
+    if (count >= 4 && index === 0) {
+      return { ...baseStyle, gridRow: "span 3" };
+    }
     return baseStyle;
   };
 
@@ -150,13 +175,15 @@ export default function PostCard({
             const isOverflowItem = extraImageCount > 0 && index === 3;
             const itemStyle = getItemStyle(index, displayItems.length);
             const key = item.src ?? `media-${index}`;
+
+            // --- FIXED: Individual click handlers per item ---
             const itemProps = onOpenPost
               ? {
                   role: "button",
                   tabIndex: 0,
                   onClick: (e) => {
-                    e.stopPropagation();
-                    handleOpenPost(index);
+                    e.stopPropagation(); // Stop bubbling to container
+                    handleOpenPost(index); // Pass specific index
                   },
                   onKeyDown: (e) => handleMediaKeyDown(e, index),
                 }
@@ -173,7 +200,7 @@ export default function PostCard({
                   gridRow: itemStyle.gridRow,
                   overflow: "hidden",
                   cursor: "pointer",
-                  backgroundColor: "#0B0E1C",
+                  backgroundColor: "#000",
                 }}>
                 {item.type === "video" ? (
                   <video
@@ -190,6 +217,7 @@ export default function PostCard({
                     style={itemStyle}
                   />
                 )}
+
                 {item.type === "video" && !isOverflowItem && (
                   <div
                     style={{
@@ -210,6 +238,7 @@ export default function PostCard({
                     ▶
                   </div>
                 )}
+
                 {isOverflowItem && (
                   <div
                     style={{
@@ -238,14 +267,14 @@ export default function PostCard({
       <div className="post-engagement">
         <button
           type="button"
-          onClick={() =>
-            onOpenLikes?.(post.id)
-          }>{`${post.likes} ${TEXT_LIKE_COUNT_SUFFIX}`}</button>
+          onClick={() => onOpenLikes?.(post.id)}>
+          {`${post.likes} ${TEXT_LIKE_COUNT_SUFFIX}`}
+        </button>
         <button
           type="button"
-          onClick={() =>
-            onOpenComments?.(post.id)
-          }>{`${post.comments.length} ${TEXT_COMMENT_COUNT_SUFFIX}`}</button>
+          onClick={() => onOpenComments?.(post.id)}>
+          {`${post.comments.length} ${TEXT_COMMENT_COUNT_SUFFIX}`}
+        </button>
       </div>
 
       <div className="post-actions">
@@ -280,6 +309,7 @@ export default function PostCard({
 }
 
 PostCard.propTypes = {
+  // ... (Keep existing props)
   post: PropTypes.any,
   isOwner: PropTypes.bool,
   onLike: PropTypes.func,

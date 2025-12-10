@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0" />
+    <title>Web Redesign Proposal - Marceline Studios</title>
+    <link
+      rel="preconnect"
+      href="https://fonts.googleapis.com" />
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap"
+      rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <!-- PDF Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+      :root {
+        --brand-red: #e11d48; /* Marceline Red */
+        --brand-dark: #0f172a; /* Dark Slate */
+        --bg-light: #fff1f2; /* Light Red Tint */
+        --text-main: #334155;
+        --border-color: #fecdd3;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        background: #333;
+        font-family: "Inter", sans-serif;
+        margin: 0;
+        padding: 20px;
+        color: var(--text-main);
+      }
+
+      /* PDF Container */
+      #pdf-content {
+        width: 210mm;
+        margin: 0 auto;
+      }
+
+      /* A4 Page */
+      .page {
+        width: 210mm;
+        min-height: 297mm;
+        background: white;
+        margin-bottom: 20px;
+        position: relative;
+        padding: 50px;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Header */
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 3px solid var(--brand-red);
+        padding-bottom: 20px;
+        margin-bottom: 40px;
+      }
+
+      .logo {
+        height: 50px;
+      }
+
+      .doc-meta {
+        text-align: right;
+      }
+      .doc-meta h1 {
+        font-family: "Playfair Display", serif;
+        font-size: 24px;
+        color: var(--brand-dark);
+        margin: 0;
+      }
+      .doc-meta span {
+        color: var(--brand-red);
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      /* Typography */
+      h2 {
+        font-family: "Playfair Display", serif;
+        font-size: 20px;
+        color: var(--brand-dark);
+        border-left: 4px solid var(--brand-red);
+        padding-left: 15px;
+        margin: 30px 0 15px 0;
+        background: linear-gradient(90deg, var(--bg-light) 0%, white 100%);
+        padding-top: 5px;
+        padding-bottom: 5px;
+      }
+
+      h3 {
+        font-size: 15px;
+        color: var(--brand-red);
+        margin: 15px 0 10px 0;
+        font-weight: 700;
+      }
+      p,
+      li {
+        font-size: 13px;
+        line-height: 1.6;
+        margin-bottom: 8px;
+        text-align: justify;
+      }
+      ul {
+        padding-left: 20px;
+        margin: 0;
+      }
+
+      /* Cards & Grids */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+
+      .card {
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 15px;
+        background: #fff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+      }
+
+      .highlight-box {
+        background: var(--bg-light);
+        border: 1px solid var(--border-color);
+        padding: 15px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+      }
+
+      /* 3D Feature Highlight */
+      .feature-3d {
+        background: #0f172a;
+        color: white;
+        padding: 15px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .feature-3d i {
+        font-size: 24px;
+        color: var(--brand-red);
+      }
+      .feature-3d p {
+        color: #cbd5e1;
+        margin: 0;
+      }
+
+      /* Timeline Table */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        margin-bottom: 20px;
+      }
+      th {
+        background: var(--brand-dark);
+        color: white;
+        padding: 10px;
+        text-align: left;
+      }
+      td {
+        border-bottom: 1px solid #e2e8f0;
+        padding: 10px;
+      }
+
+      /* Pricing */
+      .price-box {
+        background: var(--bg-light);
+        border: 2px solid var(--brand-red);
+        padding: 20px;
+        text-align: center;
+        border-radius: 8px;
+        margin-top: 10px;
+      }
+      .total-price {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--brand-red);
+      }
+
+      /* Footer */
+      .footer {
+        margin-top: auto;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 20px;
+        text-align: center;
+        font-size: 11px;
+        color: #64748b;
+      }
+
+      /* Signatures */
+      .sign-area {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #ddd;
+      }
+      .sign-box {
+        width: 45%;
+      }
+      .sign-line {
+        border-bottom: 1px solid #000;
+        margin-top: 40px;
+        margin-bottom: 5px;
+      }
+
+      /* Button */
+      #download-btn {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--brand-red);
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        font-weight: 600;
+        border-radius: 50px;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(225, 29, 72, 0.4);
+        z-index: 100;
+      }
+      #download-btn:hover {
+        background: #be123c;
+      }
+    </style>
+  </head>
+  <body>
+    <button
+      id="download-btn"
+      onclick="generatePDF()">
+      Download Proposal PDF
+    </button>
+
+    <div id="pdf-content">
+      <!-- PAGE 1 -->
+      <div class="page">
+        <div class="header">
+          <img
+            src="https://adexcell-client.vercel.app/mar.png"
+            alt="Marceline Studios"
+            class="logo"
+            crossorigin="anonymous" />
+          <div class="doc-meta">
+            <h1>Website Redesign Proposal</h1>
+            <span>Reference: Bonaldo Style | 3D Integration</span>
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 5px;
+            ">
+            <strong>Prepared For:</strong> <span>Mr. Fahim</span>
+          </div>
+          <div style="display: flex; justify-content: space-between">
+            <strong>Date:</strong> <span>December 06, 2025</span>
+          </div>
+        </div>
+
+        <h2>1. Project Overview</h2>
+        <p>
+          Marceline Studios proposes a complete redesign of your existing
+          website to match the luxury aesthetic and functionality of
+          <strong>www.bonaldo.com/en</strong>. The primary goal is to elevate
+          the brand image using a minimalist design language and integrate
+          cutting-edge <strong>3D Product Visualization</strong> technology to
+          enhance user engagement.
+        </p>
+
+        <h2>2. Scope of Work</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h3><i class="fas fa-palette"></i> Design & UI</h3>
+            <ul>
+              <li>Luxury, minimalist layout (Bonaldo style).</li>
+              <li>High-end typography & whitespace usage.</li>
+              <li>Mobile & Tablet responsive adaptation.</li>
+              <li>Smooth animations & transitions.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3><i class="fab fa-wordpress"></i> Technical Stack</h3>
+            <ul>
+              <li>CMS: <strong>WordPress</strong>.</li>
+              <li>Builder: <strong>Elementor Pro</strong>.</li>
+              <li>Performance Optimization.</li>
+              <li>SEO Friendly Structure.</li>
+            </ul>
+          </div>
+        </div>
+
+        <h2>3. Key Feature: 3D Visualization</h2>
+        <div class="feature-3d">
+          <i class="fas fa-cube"></i>
+          <div>
+            <strong>Interactive 3D Product Viewer</strong>
+            <p style="font-size: 12px; margin-top: 5px">
+              Users can rotate, zoom, and inspect products in 360 degrees
+              directly on the website, providing an immersive shopping
+              experience similar to top-tier furniture brands.
+            </p>
+          </div>
+        </div>
+
+        <h2>4. Client Requirements</h2>
+        <p>
+          To ensure the project is delivered on time, the client will provide:
+        </p>
+        <ul>
+          <li>Domain & Hosting Access.</li>
+          <li>Elementor Pro License Key.</li>
+          <li>Product Images/3D Models (if available) & Content text.</li>
+        </ul>
+
+        <div class="footer">Page 1 of 2 | Marceline Studios</div>
+      </div>
+
+      <!-- PAGE 2 -->
+      <div class="page">
+        <div
+          style="
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+          ">
+          <span style="font-weight: 700; color: var(--brand-dark)"
+            >Project Execution Plan</span
+          >
+          <span style="color: var(--brand-red)">Deadline: Dec 31st</span>
+        </div>
+
+        <h2>5. Project Timeline</h2>
+        <p>
+          <strong>Total Duration:</strong> ~25 Days (Deadline: Dec 31, 2025)
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Phase</th>
+              <th>Tasks</th>
+              <th>Completion By</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Phase 1</strong></td>
+              <td>Setup, UI Design, Layout Structure</td>
+              <td>Dec 12</td>
+            </tr>
+            <tr>
+              <td><strong>Phase 2</strong></td>
+              <td>3D Viewer Integration & Functionality</td>
+              <td>Dec 20</td>
+            </tr>
+            <tr>
+              <td><strong>Phase 3</strong></td>
+              <td>Content Upload & Responsive Testing</td>
+              <td>Dec 28</td>
+            </tr>
+            <tr>
+              <td><strong>Final</strong></td>
+              <td>Final Review & Handover</td>
+              <td><strong>Dec 31</strong></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>6. Investment</h2>
+        <div class="price-box">
+          <div
+            style="
+              font-size: 14px;
+              text-transform: uppercase;
+              letter-spacing: 2px;
+              color: var(--brand-dark);
+            ">
+            Total Project Cost
+          </div>
+          <div class="total-price">$500 USD</div>
+          <p
+            style="
+              font-size: 12px;
+              color: #64748b;
+              margin-top: 5px;
+              text-align: center;
+            ">
+            Includes Design, Development & 3D Integration
+          </p>
+        </div>
+
+        <h2>7. Support & Maintenance</h2>
+        <div class="grid-2">
+          <div
+            class="card"
+            style="border-left: 3px solid #22c55e">
+            <h3>Free Support</h3>
+            <p>
+              <strong>3 Months</strong> of bug fixing support after delivery to
+              ensure the site runs smoothly.
+            </p>
+          </div>
+          <div
+            class="card"
+            style="border-left: 3px solid var(--brand-dark)">
+            <h3>Paid Maintenance</h3>
+            <p>
+              Lifetime maintenance packages available for future feature
+              additions or content updates.
+            </p>
+          </div>
+        </div>
+
+        <div class="sign-area">
+          <div class="sign-box">
+            <strong>For: Mr. Fahim</strong>
+            <div class="sign-line"></div>
+            <span style="font-size: 12px; color: #666">Signature & Date</span>
+          </div>
+          <div class="sign-box">
+            <strong>Md Farhan Uddin</strong><br />
+            <span style="font-size: 12px; color: var(--brand-red)"
+              >CEO, Marceline Studios</span
+            >
+            <div class="sign-line"></div>
+            <span style="font-size: 12px; color: #666">Signature & Date</span>
+          </div>
+        </div>
+
+        <div class="footer">
+          support@marcelinestudios.com | +880 1882-374260 | Page 2 of 2
+        </div>
+      </div>
+    </div>
+
+    <script>
+      async function generatePDF() {
+        const btn = document.getElementById("download-btn");
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        btn.disabled = true;
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF("p", "mm", "a4");
+        const pageElements = document.querySelectorAll(".page");
+
+        for (let i = 0; i < pageElements.length; i++) {
+          const page = pageElements[i];
+
+          // Render page to canvas
+          const canvas = await html2canvas(page, {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+          });
+
+          const imgData = canvas.toDataURL("image/jpeg", 1.0);
+          const imgWidth = 210;
+          const pageHeight = 297;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+          if (i > 0) pdf.addPage();
+          pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
+        }
+
+        pdf.save("Proposal-MrFahim-MarcelineStudios.pdf");
+
+        btn.innerHTML = "Download Proposal PDF";
+        btn.disabled = false;
+      }
+    </script>
+  </body>
+</html>

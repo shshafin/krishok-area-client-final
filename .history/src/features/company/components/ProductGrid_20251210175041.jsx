@@ -163,7 +163,7 @@ export default function ProductGrid({
                     style={{
                       padding: "20px",
                       textAlign: "center",
-                      color: "#f9f9f9",
+                      color: "#666",
                       width: "100%",
                       background: "#161D26",
                       borderRadius: "8px",

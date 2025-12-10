@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { NavLink } from "react-router-dom";
 import { format } from "timeago.js";
+
 import DeleteOutlineIcon from "@/assets/IconComponents/DeleteOutlineIcon";
 import { LiquedLoader } from "@/components/loaders";
 import Modal from "./Modal";
@@ -11,6 +12,8 @@ import { useModalVideoController } from "@/hooks/useVideoVisibility";
 import ExpandableText from "@/components/ui/ExpandableText";
 
 const LIKES_CHUNK = 12;
+
+// --- CONSTANTS ---
 const TEXT_LOADING = "\u09B2\u09CB\u09A1 \u09B9\u099A\u09CD\u099B\u09C7...";
 const TEXT_LIKE_TOGGLE_ACTIVE =
   "\u09B2\u09BE\u0987\u0995 \u0995\u09B0\u09BE \u09B9\u09DF\u09C7\u099B\u09C7";
@@ -69,9 +72,12 @@ export default function PostModal({
   const [activeMode, setActiveMode] = useState(mode ?? "comments");
 
   useModalVideoController(open);
+
   const likesScrollRef = useRef(null);
   const likesThrottleRef = useRef(false);
   const likesTimerRef = useRef(null);
+
+  // Disable autoplay for mixed media to avoid videos playing while swiping
   const autoplayPlugin = useMemo(
     () => Autoplay({ delay: 4000, playOnInit: false, stopOnInteraction: true }),
     []
@@ -83,33 +89,43 @@ export default function PostModal({
   );
   const isLikesMode = activeMode === "likes";
 
-  // --- UNIFIED MEDIA ---
+  // --- FIX 1: UNIFIED MEDIA LIST ---
+  // Instead of separating "video" and "gallery", combine them all.
   const slides = useMemo(() => {
     if (!post) return [];
+
+    // If mediaGallery exists (from InfiniteFeed logic), use it. It contains {type: 'video'} and {type: 'image'}
     if (Array.isArray(post.mediaGallery) && post.mediaGallery.length > 0) {
       return post.mediaGallery.filter((item) => item && item.src);
     }
+
+    // Fallback: If only single media object exists
     const singleMedia = post.media;
-    if (singleMedia && singleMedia.src) return [singleMedia];
+    if (singleMedia && singleMedia.src) {
+      return [singleMedia];
+    }
+
     return [];
   }, [post]);
 
   const useCarousel = slides.length > 1;
 
+  // --- EMBLA CONFIG ---
   const [emblaRef, emblaApi] = useEmblaCarousel(
     {
-      align: "center",
+      align: "center", // Center the slide
       containScroll: "trimSnaps",
-      loop: useCarousel,
+      loop: useCarousel, // Only loop if > 1 item
       startIndex: initialSlideIndex,
     },
     useCarousel ? [autoplayPlugin] : []
   );
 
+  // --- FIX 2: FORCE INDEX JUMP ---
   useEffect(() => {
     if (open && emblaApi) {
-      emblaApi.reInit();
-      emblaApi.scrollTo(initialSlideIndex, true);
+      emblaApi.reInit(); // Re-init to handle content changes
+      emblaApi.scrollTo(initialSlideIndex, true); // Jump instantly
     }
   }, [open, emblaApi, initialSlideIndex, slides]);
 
@@ -117,8 +133,11 @@ export default function PostModal({
     if (!open) return;
     setActiveMode(mode ?? "comments");
   }, [mode, open]);
+
   useEffect(() => {
-    if (open && activeMode !== "likes") setCommentText("");
+    if (open && activeMode !== "likes") {
+      setCommentText("");
+    }
   }, [open, activeMode, post?.id]);
 
   useEffect(() => {
@@ -160,6 +179,7 @@ export default function PostModal({
     (event) => {
       if (!isLikesMode || likesLoading) return;
       const target = event.currentTarget;
+      if (!target) return;
       const { scrollTop, clientHeight, scrollHeight } = target;
       if (scrollHeight - (scrollTop + clientHeight) <= 32) {
         if (likesThrottleRef.current) return;
@@ -215,7 +235,7 @@ export default function PostModal({
     });
   }, [visibleLikes, likesLoading, post]);
 
-  if (!post)
+  if (!post) {
     return (
       <Modal
         open={open}
@@ -229,6 +249,7 @@ export default function PostModal({
         </div>
       </Modal>
     );
+  }
 
   const likeToggleLabel = post.liked
     ? TEXT_LIKE_TOGGLE_ACTIVE
@@ -272,6 +293,7 @@ export default function PostModal({
 
   const setCommentsMode = () => setActiveMode("comments");
   const setLikesMode = () => setActiveMode("likes");
+
   const mediaStyle = {
     width: "100%",
     height: "100%",
@@ -294,6 +316,7 @@ export default function PostModal({
             useCarousel ? " post-modal-media--carousel" : ""
           }`}
           style={{ flexGrow: 1, maxHeight: "100%", minHeight: 0 }}>
+          {/* --- FIX 3: RENDER SLIDES (MIXED VIDEO/IMAGE) --- */}
           {slides.length > 0 ? (
             <div className="post-modal-carousel">
               <div
@@ -321,6 +344,7 @@ export default function PostModal({
                             controls
                             loop
                             style={mediaStyle}
+                            // Stop playing if not active slide? (Optional complexity)
                           />
                         ) : (
                           <img
@@ -341,6 +365,7 @@ export default function PostModal({
         </div>
 
         <div className="post-modal-comments">
+          {/* ... Comments Section remains same ... */}
           {post.content && (
             <div
               style={{
@@ -479,4 +504,16 @@ PostModal.propTypes = {
   onDeleteComment: PropTypes.func,
   canDeleteComment: PropTypes.func,
   initialSlideIndex: PropTypes.number,
+};
+
+PostModal.defaultProps = {
+  open: false,
+  post: null,
+  mode: "comments",
+  initialSlideIndex: 0,
+  onClose: undefined,
+  onToggleLike: undefined,
+  onAddComment: undefined,
+  onDeleteComment: undefined,
+  canDeleteComment: undefined,
 };

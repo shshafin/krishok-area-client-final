@@ -173,7 +173,7 @@ export default function PostCard({
                   gridRow: itemStyle.gridRow,
                   overflow: "hidden",
                   cursor: "pointer",
-                  backgroundColor: "#0B0E1C",
+                  backgroundColor: "#000",
                 }}>
                 {item.type === "video" ? (
                   <video
@@ -218,7 +218,7 @@ export default function PostCard({
                       left: 0,
                       width: "100%",
                       height: "100%",
-                      backgroundColor: "rgba(0, 0, 0, 0.6)",
+                      backgroundColor: "#0B0E1C",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",

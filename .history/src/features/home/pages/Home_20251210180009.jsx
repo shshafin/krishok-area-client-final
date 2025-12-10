@@ -78,8 +78,6 @@ export default function Home() {
       await createPost(formData);
       toast.success("Post created successfully!");
       closeComposer();
-      // Optionally trigger a feed refresh here if you have a mechanism for it
-      // window.location.reload();
     } catch (error) {
       console.error("Failed to create post", error);
       const message =
@@ -131,9 +129,6 @@ export default function Home() {
           username: userContext.username,
           avatar: userContext.profileImage,
         }}
-        // --- PASSING EXPLICIT LIMITS ---
-        maxImages={3}
-        maxVideos={3}
       />
     </>
   );
