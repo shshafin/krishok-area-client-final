@@ -203,6 +203,7 @@ export default function InfiniteFeed() {
   const [currentUser, setCurrentUser] = useState(null);
   const [activePostId, setActivePostId] = useState(null);
   const [activeModalMode, setActiveModalMode] = useState("comments");
+  const [activePostStartIndex, setActivePostStartIndex] = useState(0);
   const [deletingCommentId, setDeletingCommentId] = useState(null);
 
   const currentUserId = useMemo(() => resolveId(currentUser), [currentUser]);
@@ -492,19 +493,22 @@ export default function InfiniteFeed() {
     }
   }, []);
 
-  const openCommentsModal = useCallback((postId) => {
+  const openCommentsModal = useCallback((postId, startIndex = 0) => {
     setActiveModalMode("comments");
+    setActivePostStartIndex(Number.isFinite(startIndex) ? startIndex : 0);
     setActivePostId(postId);
   }, []);
 
   const openLikesModal = useCallback((postId) => {
     setActiveModalMode("likes");
+    setActivePostStartIndex(0);
     setActivePostId(postId);
   }, []);
 
   const closeModal = useCallback(() => {
     setActivePostId(null);
     setActiveModalMode("comments");
+    setActivePostStartIndex(0);
     setDeletingCommentId(null);
   }, []);
 
@@ -566,6 +570,7 @@ export default function InfiniteFeed() {
         open={Boolean(activePost)}
         post={activePost}
         mode={activeModalMode}
+        startIndex={activePostStartIndex}
         onClose={closeModal}
         onToggleLike={handleToggleLike}
         onAddComment={handleAddComment}

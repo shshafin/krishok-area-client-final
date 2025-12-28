@@ -1,30 +1,39 @@
 /* Viewport */
 .embla {
   overflow: hidden;
-  padding: 8px 48px; /* space for arrows */
+  padding: 0; /* no outer gap; only slide-to-slide gap */
+  margin: 0 auto;
+  width: fit-content;
+  max-width: 100%;
   touch-action: pan-y; /* allow vertical page scroll; horizontal swipe kept */
 }
 
 /* Track */
 .embla__container {
   display: flex; /* use flex, not grid, with embla */
-  gap: 12px;
-  align-items: flex-start;
+  gap: 6px;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .embla__container {
+    gap: 4px;
+  }
 }
 
 /* Slides – give them a fixed basis so they render even before image loads */
 .embla__slide {
-  flex: 0 0 300px; /* width of one card */
-  height: 277px;
+  flex: 0 0 auto;
+  display: flex;
   align-items: center;
   justify-content: center;
 }
 
 /* Image sizing */
 .sizeprocut50k {
-  width: 300px;
-  height: 400px;
-  object-fit: cover;
+  width: min(300px, 80vw);
+  height: auto;
+  object-fit: contain;
   border-radius: 8px;
   display: block;
 }

@@ -77,6 +77,9 @@ export default function PostCard({
   const handleOpenPost = () => {
     onOpenPost?.(post.id);
   };
+  const handleOpenPostAt = (index) => {
+    onOpenPost?.(post.id, index);
+  };
   const handleMediaKeyDown = (event) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
@@ -165,6 +168,11 @@ export default function PostCard({
                   <img
                     src={item.src}
                     alt={post.content || TEXT_MEDIA_ALT}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      handleOpenPostAt(index);
+                    }}
                   />
                   {isOverflowItem && (
                     <span className="post-media-grid-more-label">

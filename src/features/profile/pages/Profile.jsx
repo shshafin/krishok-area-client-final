@@ -49,6 +49,7 @@ export default function ProfilePage() {
   const [followingOpen, setFollowingOpen] = useState(false);
   const [activePostId, setActivePostId] = useState(null);
   const [activePostMode, setActivePostMode] = useState("comments");
+  const [activePostStartIndex, setActivePostStartIndex] = useState(0);
 
   // 👇 এখানেই declare করো
   const composerRef = useRef(null);
@@ -56,15 +57,18 @@ export default function ProfilePage() {
   const closeActivePost = useCallback(() => {
     setActivePostId(null);
     setActivePostMode("comments");
+    setActivePostStartIndex(0);
   }, []);
 
-  const openPostComments = useCallback((postId) => {
+  const openPostComments = useCallback((postId, startIndex = 0) => {
     setActivePostMode("comments");
+    setActivePostStartIndex(Number.isFinite(startIndex) ? startIndex : 0);
     setActivePostId(postId);
   }, []);
 
   const openPostLikes = useCallback((postId) => {
     setActivePostMode("likes");
+    setActivePostStartIndex(0);
     setActivePostId(postId);
   }, []);
 
@@ -470,6 +474,7 @@ export default function ProfilePage() {
         open={Boolean(activePostId)}
         post={posts.find((p) => p.id === activePostId)}
         mode={activePostMode}
+        startIndex={activePostStartIndex}
         onClose={closeActivePost}
         onToggleLike={toggleLike}
         onAddComment={addComment}

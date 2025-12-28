@@ -688,8 +688,7 @@
 .post-media video {
   width: 100%;
   display: block;
-  max-height: 520px;
-  object-fit: contain !important;
+  object-fit: cover !important;
 }
 
 .post-media--has-gallery {
@@ -709,7 +708,7 @@
 
 .post-media-grid.count-1 {
   grid-template-columns: 1fr;
-  grid-template-rows: minmax(0, 400px);
+  grid-template-rows: minmax(0, auto);
 }
 
 .post-media-grid.count-2 {
@@ -924,19 +923,18 @@
 
 /* Modal base */
 .ka-modal-backdrop {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 99999;
   position: fixed;
-  inset: 0;
   background: rgba(15, 23, 42, 0.5);
-  display: flex;
-  justify-content: center !important;
-  align-items: center !important;
-  padding: 2rem 1rem;
-  z-index: 1;
 }
 
 .ka-modal {
   position: relative;
-  z-index: 2;
+  z-index: 100000;
 }
 
 .modal-loader-container {
@@ -947,25 +945,15 @@
 }
 
 .ka-modal {
-  background: #0b1220;
-  border-radius: 18px;
   width: 100%;
-  max-width: 720px;
-  height: 80%;
+  height: 100%;
   display: flex;
-  flex-direction: column;
   overflow: hidden;
+  background: #0b1220;
+  flex-direction: column;
   border: 1px solid rgba(148, 163, 184, 0.2);
   box-shadow: 0 24px 60px rgba(7, 12, 24, 0.65);
   color: #e2e8f0;
-}
-
-.ka-modal-lg {
-  max-width: 960px;
-}
-
-.ka-modal-xl {
-  max-width: 1100px;
 }
 
 .ka-modal-header,
@@ -986,9 +974,8 @@
 
 .ka-modal-body {
   width: 100%;
-  height: 89%;
+  height: 100%;
   overflow-x: auto !important;
-  padding: 1.25rem 1.5rem;
   background: rgba(11, 18, 31, 0.92);
 }
 
@@ -1021,11 +1008,8 @@
 @media (max-width: 900px) {
   .post-modal-content {
     display: flex;
+    height: fit-content;
     flex-direction: column;
-  }
-
-  .post-modal-media {
-    max-height: 20vh;
   }
 
   .ka-modal-backdrop {
@@ -1037,12 +1021,14 @@
     border-radius: 0 !important;
     border: none;
     max-height: 100% !important;
-    height: 87vh !important;
   }
 
   .ka-modal-body {
-    height: 88%;
     overflow-x: auto;
+  }
+
+  .post-modal-comments {
+    margin: 0 .5rem;
   }
 
   .comment-list {
@@ -1062,12 +1048,9 @@
 }
 
 .post-modal-media {
-  border-radius: 16px;
+  height: auto;
   overflow: hidden;
-  height: 98%;
-  max-height: 62vh;
-  background: #0b1628;
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: #02070f;
 }
 
 .post-modal-media--carousel {
@@ -1076,22 +1059,23 @@
   align-items: center;
   justify-content: center;
   position: relative;
+  height: 100%;
 }
 
 .post-modal-carousel {
   width: 100%;
-  height: 100%;
+  height: auto;
 }
 
 .post-modal-carousel__viewport {
   overflow: hidden;
   width: 100%;
-  height: 100%;
+  height: auto;
 }
 
 .post-modal-carousel__container {
   display: flex;
-  height: 100%;
+  height: auto;
 }
 
 .post-modal-carousel__slide {
@@ -1102,21 +1086,17 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  height: fit-content;
 }
 
 .post-modal-carousel__slide img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  max-height: 80vh;
+  object-fit: contain;
   display: block;
 }
 
-/* top-fixed variant for post modal (over header) */
-.post-modal--top.ka-modal {
-  margin-top: 0.5rem;
-  /* small offset from top */
-  border-radius: 12px;
-}
 
 .post-modal--top.ka-modal-backdrop,
 .ka-modal-backdrop .post-modal--top {
@@ -1128,10 +1108,9 @@
 .post-modal-media img,
 .post-modal-media video {
   width: 100%;
-  display: block;
   height: 100%;
-  object-fit: cover;
-  max-height: 70vh;
+  display: inline-block;
+  object-fit: contain;
 }
 
 .post-modal-media video {
@@ -1140,7 +1119,8 @@
 
 .post-modal-comments {
   display: flex;
-  height: 100%;
+  height: fit-content;
+  min-height: 90%;
   overflow: hidden;
   overflow-y: auto;
   flex-direction: column;
@@ -1149,7 +1129,7 @@
 
 .comment-list {
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   gap: 1rem;
   padding-right: 4px;
   margin-bottom: 10rem;
@@ -1321,9 +1301,9 @@
 }
 
 .seed-modal .ka-modal-body {
+  width: 100%;
+  height: 100%;
   padding: 1rem 1rem 0.5rem 1rem;
-  height: calc(100% - 120px);
-  overflow: auto;
 }
 
 .seed-modal .ka-modal-footer {
@@ -1384,31 +1364,51 @@
 /* Gallery modal */
 .all-posts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.65rem;
+  align-items: stretch;
 }
 
 .all-posts-item {
   position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
   border-radius: 14px;
   overflow: hidden;
   cursor: pointer;
   background: rgba(12, 19, 33, 0.85);
   border: 1px solid rgba(148, 163, 184, 0.2);
+  padding: 0;
+  display: block;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.all-posts-item:hover {
+  transform: translateY(-1px);
+  border-color: rgba(148, 163, 184, 0.35);
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.35);
+}
+
+.all-posts-item:focus-visible {
+  outline: 2px solid rgba(59, 130, 246, 0.8);
+  outline-offset: 2px;
 }
 
 .all-posts-item img,
 .all-posts-item video {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: 0;
-  padding-top: 100%;
+  height: 100%;
   object-fit: cover;
   display: block;
 }
 
-.all-posts-item img {
-  height: 100%;
-  padding-top: 0;
+@media (max-width: 480px) {
+  .all-posts-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.5rem;
+  }
 }
 
 .follow-list {
@@ -1739,5 +1739,9 @@
   .post-card .post-media {
     margin-left: -1rem;
     margin-right: -1rem;
+  }
+
+  .post-modal-media--carousel {
+    height: fit-content;
   }
 }

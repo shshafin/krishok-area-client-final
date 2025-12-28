@@ -73,12 +73,6 @@ export default function SlideGallery({ items = [] }) {
                   className="sizeprocut50k"
                   src={`${baseApi}${p.img}`}
                   alt={p.name}
-                  style={{
-                    width: "auto",
-                    height: "100%",
-                    objectFit: "cover",
-                    borderRadius: 8,
-                  }}
                 />
               </NavLink>
             </div>

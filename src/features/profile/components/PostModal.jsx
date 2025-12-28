@@ -58,6 +58,7 @@ export default function PostModal({
   open,
   post,
   mode,
+  startIndex,
   onClose,
   onToggleLike,
   onAddComment,
@@ -69,6 +70,7 @@ export default function PostModal({
   const [likesCursor, setLikesCursor] = useState(0);
   const [likesLoading, setLikesLoading] = useState(false);
   const [activeMode, setActiveMode] = useState(mode ?? "comments");
+  const [carouselHeight, setCarouselHeight] = useState(null);
 
   // Notify global controller about modal state
   useModalVideoController(open);
@@ -118,13 +120,68 @@ export default function PostModal({
   const hasGallery = galleryImages.length > 0;
   const hasVideo = media?.type === "video" && media?.src;
 
-  const [emblaRef] = useEmblaCarousel(
+  const slideImgRefs = useRef([]);
+
+  const [emblaRef, emblaApi] = useEmblaCarousel(
     {
       align: "start",
       loop: useCarousel,
     },
     useCarousel ? [autoplayPlugin] : []
   );
+
+  const syncCarouselHeight = useCallback(() => {
+    if (!useCarousel) return;
+    if (!emblaApi) return;
+
+    const selectedIndex = emblaApi.selectedScrollSnap();
+    const imgEl = slideImgRefs.current?.[selectedIndex] ?? null;
+    if (!imgEl) return;
+
+    const rect = imgEl.getBoundingClientRect();
+    if (!rect?.height) return;
+
+    setCarouselHeight((prev) => {
+      const next = Math.round(rect.height);
+      return prev === next ? prev : next;
+    });
+  }, [useCarousel, emblaApi]);
+
+  useEffect(() => {
+    if (!open) return;
+    if (!useCarousel) return;
+    if (!emblaApi) return;
+
+    const total = galleryImages.length;
+    if (!total) return;
+
+    const rawIndex = Number.isFinite(startIndex) ? startIndex : 0;
+    const clampedIndex = Math.max(0, Math.min(rawIndex, total - 1));
+    emblaApi.scrollTo(clampedIndex, true);
+    requestAnimationFrame(() => {
+      syncCarouselHeight();
+    });
+  }, [open, useCarousel, emblaApi, startIndex, galleryImages.length]);
+
+  useEffect(() => {
+    if (!open) return;
+    if (!useCarousel) return;
+    if (!emblaApi) return;
+
+    syncCarouselHeight();
+
+    emblaApi.on("select", syncCarouselHeight);
+    emblaApi.on("reInit", syncCarouselHeight);
+
+    const handleResize = () => syncCarouselHeight();
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      emblaApi.off("select", syncCarouselHeight);
+      emblaApi.off("reInit", syncCarouselHeight);
+    };
+  }, [open, useCarousel, emblaApi, syncCarouselHeight]);
 
   useEffect(() => {
     if (!open) return;
@@ -330,7 +387,12 @@ export default function PostModal({
               <div className="post-modal-carousel">
                 <div
                   className="post-modal-carousel__viewport"
-                  ref={emblaRef}>
+                  ref={emblaRef}
+                  style={
+                    carouselHeight
+                      ? { height: `${carouselHeight}px`, transition: "height 180ms ease" }
+                      : undefined
+                  }>
                   <div className="post-modal-carousel__container">
                     {galleryImages.map((item, index) => {
                       const key = item.src ?? `slide-${index}`;
@@ -341,6 +403,15 @@ export default function PostModal({
                           <img
                             src={item.src}
                             alt={post.content || TEXT_MEDIA_ALT}
+                            ref={(node) => {
+                              slideImgRefs.current[index] = node;
+                            }}
+                            onLoad={() => {
+                              if (!emblaApi) return;
+                              if (emblaApi.selectedScrollSnap() === index) {
+                                syncCarouselHeight();
+                              }
+                            }}
                           />
                         </div>
                       );
@@ -357,131 +428,133 @@ export default function PostModal({
           ) : null}
         </div>
 
-        <div className="post-modal-comments">
-          {post.content && (
-            <div
-              style={{
-                border: "1px solid #e2e8f0",
-                borderRadius: "14px",
-                padding: "0.75rem",
-              }}>
-              <div style={{ fontWeight: 600, marginBottom: "0.35rem" }}>
-                {post.author.name}
-              </div>
-              <ExpandableText text={post.content} />
-            </div>
-          )}
-
-          <div
-            className="post-engagement"
-            style={{ marginTop: "0.25rem", gap: "0.5rem" }}>
-            <button
-              type="button"
-              className={post.liked ? "liked" : ""}
-              onClick={() => onToggleLike?.(post.id)}>
-              {likeToggleLabel}
-            </button>
-            <button
-              type="button"
-              onClick={setLikesMode}>
-              {likeCountLabel}
-            </button>
-            <button
-              type="button"
-              onClick={setCommentsMode}>
-              {commentCountLabel}
-            </button>
-          </div>
-
-          {isLikesMode ? (
-            <div className="post-likes-wrapper">
+        <section>
+          <div className="post-modal-comments">
+            {post.content && (
               <div
-                className="post-likes-list"
-                ref={likesScrollRef}
-                onScroll={handleLikesScroll}>
-                {likesContent}
-                {likesLoading && (
-                  <div
-                    className="post-likes-loading"
-                    aria-live="polite">
-                    {TEXT_LIKES_LOADING}
-                  </div>
-                )}
+                style={{
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "14px",
+                  padding: "0.75rem",
+                }}>
+                <div style={{ fontWeight: 600, marginBottom: "0.35rem" }}>
+                  {post.author.name}
+                </div>
+                <ExpandableText text={post.content} />
               </div>
-            </div>
-          ) : (
-            <>
-              <div className="comment-list">
-                {post.comments.length === 0 && (
-                  <div className="empty-state">{TEXT_NO_COMMENTS}</div>
-                )}
-                {post.comments.map((comment) => {
-                  const profilePath = buildProfilePath(comment.author);
+            )}
 
-                  return (
+            <div
+              className="post-engagement"
+              style={{ marginTop: "0.25rem", gap: "0.5rem" }}>
+              <button
+                type="button"
+                className={post.liked ? "liked" : ""}
+                onClick={() => onToggleLike?.(post.id)}>
+                {likeToggleLabel}
+              </button>
+              <button
+                type="button"
+                onClick={setLikesMode}>
+                {likeCountLabel}
+              </button>
+              <button
+                type="button"
+                onClick={setCommentsMode}>
+                {commentCountLabel}
+              </button>
+            </div>
+
+            {isLikesMode ? (
+              <div className="post-likes-wrapper">
+                <div
+                  className="post-likes-list"
+                  ref={likesScrollRef}
+                  onScroll={handleLikesScroll}>
+                  {likesContent}
+                  {likesLoading && (
                     <div
-                      key={comment.id}
-                      className="comment-item">
-                      <img
-                        src={comment.author.avatar}
-                        alt={comment.author.name}
-                        className="comment-item-avatar"
-                      />
+                      className="post-likes-loading"
+                      aria-live="polite">
+                      {TEXT_LIKES_LOADING}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="comment-list">
+                  {post.comments.length === 0 && (
+                    <div className="empty-state">{TEXT_NO_COMMENTS}</div>
+                  )}
+                  {post.comments.map((comment) => {
+                    const profilePath = buildProfilePath(comment.author);
+
+                    return (
                       <div
-                        className="comment-item-body"
-                        style={{ flex: 1 }}>
-                        <h6>
-                          {profilePath ? (
-                            <NavLink
-                              to={profilePath}
-                              style={{ color: "inherit", textDecoration: "none" }}
-                            >
-                              {comment.author.name || TEXT_UNKNOWN_USER}
-                            </NavLink>
-                          ) : (
-                            comment.author.name || TEXT_UNKNOWN_USER
-                          )}
-                        </h6>
-                        <ExpandableText text={comment.text} maxLines={3} />
-                        <div className="comment-item-meta">
-                          <span>{format(comment.createdAt)}</span>
-                          {canDeleteComment?.(comment) && (
-                            <button
-                              type="button"
-                              className="comment-delete-btn"
-                              onClick={(event) => {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                onDeleteComment?.(post.id, comment.id);
-                              }}
-                              aria-label={TEXT_DELETE_COMMENT_ARIA}>
-                              <DeleteOutlineIcon width={16} />
-                            </button>
-                          )}
+                        key={comment.id}
+                        className="comment-item">
+                        <img
+                          src={comment.author.avatar}
+                          alt={comment.author.name}
+                          className="comment-item-avatar"
+                        />
+                        <div
+                          className="comment-item-body"
+                          style={{ flex: 1 }}>
+                          <h6>
+                            {profilePath ? (
+                              <NavLink
+                                to={profilePath}
+                                style={{ color: "inherit", textDecoration: "none" }}
+                              >
+                                {comment.author.name || TEXT_UNKNOWN_USER}
+                              </NavLink>
+                            ) : (
+                              comment.author.name || TEXT_UNKNOWN_USER
+                            )}
+                          </h6>
+                          <ExpandableText text={comment.text} maxLines={3} />
+                          <div className="comment-item-meta">
+                            <span>{format(comment.createdAt)}</span>
+                            {canDeleteComment?.(comment) && (
+                              <button
+                                type="button"
+                                className="comment-delete-btn"
+                                onClick={(event) => {
+                                  event.preventDefault();
+                                  event.stopPropagation();
+                                  onDeleteComment?.(post.id, comment.id);
+                                }}
+                                aria-label={TEXT_DELETE_COMMENT_ARIA}>
+                                <DeleteOutlineIcon width={16} />
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </>
-          )}
-        </div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+          </div>
 
-        <div className="comment-input-area">
-          <textarea
-            name="comment"
-            value={commentText}
-            onChange={(event) => setCommentText(event.target.value)}
-            placeholder={TEXT_COMMENT_PLACEHOLDER}
-          />
-          <button
-            type="button"
-            onClick={handleSubmitComment}
-            disabled={!commentText.trim()}>
-            {TEXT_SUBMIT_COMMENT}
-          </button>
-        </div>
+          <div className="comment-input-area">
+            <textarea
+              name="comment"
+              value={commentText}
+              onChange={(event) => setCommentText(event.target.value)}
+              placeholder={TEXT_COMMENT_PLACEHOLDER}
+            />
+            <button
+              type="button"
+              onClick={handleSubmitComment}
+              disabled={!commentText.trim()}>
+              {TEXT_SUBMIT_COMMENT}
+            </button>
+          </div>
+        </section>
       </div>
     </Modal>
   );
@@ -539,6 +612,7 @@ PostModal.propTypes = {
     }).isRequired,
   }),
   mode: PropTypes.oneOf(["comments", "likes"]),
+  startIndex: PropTypes.number,
   onClose: PropTypes.func,
   onToggleLike: PropTypes.func,
   onAddComment: PropTypes.func,
@@ -550,6 +624,7 @@ PostModal.defaultProps = {
   open: false,
   post: null,
   mode: "comments",
+  startIndex: 0,
   onClose: undefined,
   onToggleLike: undefined,
   onAddComment: undefined,

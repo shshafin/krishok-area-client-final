@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import PropTypes from "prop-types";
+import { createPortal } from "react-dom";
 
 export default function Modal({
   open,
@@ -37,7 +38,7 @@ export default function Modal({
     ...(backdropStyle || {}),
   };
 
-  return (
+  return createPortal(
     <div
       className="ka-modal-backdrop"
       role="dialog"
@@ -67,7 +68,8 @@ export default function Modal({
 
         {footer && <div className="ka-modal-footer">{footer}</div>}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
